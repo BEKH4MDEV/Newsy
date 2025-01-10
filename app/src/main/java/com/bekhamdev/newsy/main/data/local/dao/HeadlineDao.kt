@@ -12,10 +12,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HeadlineDao {
     @Query("SELECT * FROM headline")
-    suspend fun getAllHeadlineArticles(): PagingSource<Int, HeadlineEntity>
+    fun getAllHeadlineArticles(): PagingSource<Int, HeadlineEntity>
 
     @Query("SELECT * FROM headline WHERE id = :id")
-    suspend fun getHeadlineArticle(id: Int): Flow<HeadlineEntity>
+    fun getHeadlineArticle(id: Int): Flow<HeadlineEntity>
 
     @Insert(
         onConflict = OnConflictStrategy.REPLACE
@@ -31,5 +31,5 @@ interface HeadlineDao {
     )
 
     @Query("UPDATE headline SET favourite = :isFavourite WHERE id = :id ")
-    suspend fun updateFavouriteArticle(isFavourite: Boolean, id: Int)
+    suspend fun updateFavouriteArticle(isFavourite: Boolean, id: Long)
 }

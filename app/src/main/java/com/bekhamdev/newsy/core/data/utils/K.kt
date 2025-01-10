@@ -1,4 +1,4 @@
-package com.bekhamdev.newsy.core.data
+package com.bekhamdev.newsy.core.data.utils
 
 object K {
     const val PAGE_SIZE = 20

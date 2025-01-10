@@ -32,7 +32,7 @@ data class HeadlineEntity(
     @ColumnInfo(name = "url_to_image")
     val urlToImage: String?,
 
-    val favourite: Boolean,
+    val favourite: Boolean = false,
     val category: String,
     val page: Int
 )

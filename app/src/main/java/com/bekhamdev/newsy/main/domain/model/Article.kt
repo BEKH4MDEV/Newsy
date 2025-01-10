@@ -1,6 +1,7 @@
 package com.bekhamdev.newsy.main.domain.model
 
 data class Article(
+    val id: Long,
     val author: String?,
     val content: String,
     val description: String,

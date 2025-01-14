@@ -22,7 +22,9 @@ object LocalModule {
             context,
             NewsyArticleDatabase::class.java,
             "newsy"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
 }

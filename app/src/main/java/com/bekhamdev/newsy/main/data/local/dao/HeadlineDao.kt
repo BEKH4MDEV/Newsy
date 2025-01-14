@@ -32,4 +32,6 @@ interface HeadlineDao {
 
     @Query("UPDATE headline SET favourite = :isFavourite WHERE id = :id ")
     suspend fun updateFavouriteArticle(isFavourite: Boolean, id: Long)
+
+    // Se podría crear getCreationTime para usarlo en el mediator
 }

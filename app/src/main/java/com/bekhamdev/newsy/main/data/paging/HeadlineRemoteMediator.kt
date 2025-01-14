@@ -31,7 +31,7 @@ class HeadlineRemoteMediator(
         return if (
             System.currentTimeMillis()
             -
-            (database.headlineKeyDao().getCreationTime() ?: 0)
+            (database.headlineKeyDao().getCreationTime() ?: 0) // Podria usar el getCreationTime del mismo headlineDao
             < cacheTimeout
         ) {
             InitializeAction.SKIP_INITIAL_REFRESH

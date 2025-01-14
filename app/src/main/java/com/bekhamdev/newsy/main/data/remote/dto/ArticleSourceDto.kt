@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ArticleSourceDto(
     val id: String?,
-    val name: String
+    val name: String?
 )

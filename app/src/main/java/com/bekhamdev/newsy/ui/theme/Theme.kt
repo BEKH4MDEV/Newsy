@@ -8,6 +8,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -74,6 +78,20 @@ private val LightColorScheme = lightColorScheme(
     scrim = md_theme_light_scrim
 )
 
+private val LocalDimens = staticCompositionLocalOf { defaultDimens }
+
+@Composable
+fun ProviderDimens(
+    dimens: Dimens = defaultDimens,
+    content: @Composable () -> Unit
+) {
+    val dimensionSet = remember { dimens }
+    CompositionLocalProvider(
+        LocalDimens provides dimensionSet,
+        content = content
+    )
+}
+
 @Composable
 fun NewsyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -91,9 +109,18 @@ fun NewsyTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    ProviderDimens {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
+}
+
+object NewsyTheme {
+    val dimens: Dimens
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalDimens.current
 }

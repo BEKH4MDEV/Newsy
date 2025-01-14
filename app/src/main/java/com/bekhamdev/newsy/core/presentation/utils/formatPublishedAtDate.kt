@@ -11,6 +11,6 @@ fun formatPublishedAtDate(publishedAt: String): String {
         outputFormat.format(date!!)
     } catch (e: Exception) {
         e.printStackTrace()
-        "" // Handle parsing errors gracefully
+        "Unknown" // Handle parsing errors gracefully
     }
 }

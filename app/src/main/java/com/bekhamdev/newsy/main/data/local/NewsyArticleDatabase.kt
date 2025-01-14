@@ -13,9 +13,9 @@ import com.bekhamdev.newsy.main.data.local.entity.HeadlineKeyEntity
         HeadlineKeyEntity::class
     ],
     exportSchema = false,
-    version = 1
+    version = 3
 )
 abstract class NewsyArticleDatabase : RoomDatabase() {
     abstract fun headlineDao(): HeadlineDao
-    abstract fun headlineKeyDao(): HeadlineKeyDao
+    abstract fun headlineKeyDao(): HeadlineKeyDao //Problemente a eliminar
 }

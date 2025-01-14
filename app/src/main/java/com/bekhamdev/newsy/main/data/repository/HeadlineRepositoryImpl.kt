@@ -6,7 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.bekhamdev.newsy.core.data.utils.K
-import com.bekhamdev.newsy.main.domain.mappers.toArticle
+import com.bekhamdev.newsy.main.data.mappers.toArticle
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
 import com.bekhamdev.newsy.main.data.paging.HeadlineRemoteMediator
 import com.bekhamdev.newsy.main.data.remote.api.HeadlineApi

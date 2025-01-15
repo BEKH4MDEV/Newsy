@@ -31,7 +31,9 @@ data class HeadlineEntity(
 
     val favourite: Boolean = false,
     val category: String, //
-    val page: Int //
+    val page: Int,
 
-    //@ColumnInfo(name = "created_at")
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long = System.currentTimeMillis()
 )
+

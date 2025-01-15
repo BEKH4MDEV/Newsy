@@ -9,7 +9,6 @@ import androidx.paging.RemoteMediator
 import com.bekhamdev.newsy.main.data.mappers.toHeadlineEntity
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
 import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
-import com.bekhamdev.newsy.main.data.local.entity.HeadlineKeyEntity
 import com.bekhamdev.newsy.main.data.remote.api.HeadlineApi
 import okio.IOException
 import java.util.concurrent.TimeUnit
@@ -31,7 +30,7 @@ class HeadlineRemoteMediator(
         return if (
             System.currentTimeMillis()
             -
-            (database.headlineKeyDao().getCreationTime() ?: 0) // Podria usar el getCreationTime del mismo headlineDao
+            (database.headlineDao().getCreationTime())
             < cacheTimeout
         ) {
             InitializeAction.SKIP_INITIAL_REFRESH
@@ -69,20 +68,8 @@ class HeadlineRemoteMediator(
 
             database.apply {
                 if (loadType == LoadType.REFRESH) {
-                    headlineKeyDao().clearHeadlineKeys()
                     headlineDao().removeAllHeadlineArticles()
                 }
-                val prevKey = if (page > 1) page - 1 else null
-                val nextKey = if (endOfPaginationReached) null else page + 1
-                val keys = headlineArticles.map {
-                    HeadlineKeyEntity(
-                        articleId  = it.url,
-                        prevKey = prevKey,
-                        currentPage = page,
-                        nextKey = nextKey
-                    )
-                }
-                headlineKeyDao().insertAll(keys)
                 headlineDao().insertHeadlineArticles(
                     headlineArticles.map {
                         it.toHeadlineEntity()

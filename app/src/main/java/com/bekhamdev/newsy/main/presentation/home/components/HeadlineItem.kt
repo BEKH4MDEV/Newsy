@@ -10,10 +10,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -22,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -85,29 +82,6 @@ fun HeadlineItem(
                 onFavouriteChange = onFavouriteChange
             )
         }
-        Box(
-            modifier = Modifier
-                .padding(end = NewsyTheme.dimens.mediumPadding)
-                .align(Alignment.End)
-        ) {
-
-            if (articlesSize > 0) {
-                Text(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .clickable {
-                            onViewMoreClick()
-                        }
-                        .padding(
-                            vertical = NewsyTheme.dimens.itemPadding,
-                            horizontal = NewsyTheme.dimens.defaultPadding
-                        ),
-                    text = "View More",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
     }
 }
 
@@ -116,7 +90,6 @@ fun HeadlineItem(
 fun HeadlineItemPreview() {
     val articles = listOf(
         ArticleUi(
-            id = 1L,
             author = "Jane Doe",
             content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
             description = "An overview of Kotlin features.",
@@ -127,10 +100,8 @@ fun HeadlineItemPreview() {
             urlToImage = "https://technews.com/images/kotlin.jpg",
             favourite = true,
             category = "Programming",
-            page = 1
         ),
         ArticleUi(
-            id = 2L,
             author = "John Smith",
             content = "Nullam non urna eu lectus fermentum bibendum.",
             description = "Why Kotlin is a great choice for Android development.",
@@ -141,7 +112,6 @@ fun HeadlineItemPreview() {
             urlToImage = null,
             favourite = false,
             category = "Android Development",
-            page = 2
         )
     )
 

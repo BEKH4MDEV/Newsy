@@ -7,15 +7,20 @@ import androidx.paging.LoadState
 fun PaginationLoadingItem(
     loadState: LoadState?,
     onError: (e: Throwable) -> Unit,
+    items: List<Any>,
     onLoading: @Composable () -> Unit,
 ) {
-    when (loadState) {
-        is LoadState.Error -> {
-            onError(loadState.error)
-        }
-        is LoadState.Loading -> {
+
+    when {
+        loadState is LoadState.Loading -> {
             onLoading()
         }
-        else -> {}
+        items.isEmpty() -> {
+            onLoading()
+        }
+        loadState is LoadState.Error -> {
+            onLoading()
+            onError(loadState.error)
+        }
     }
 }

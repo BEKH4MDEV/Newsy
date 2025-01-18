@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
             NewsyTheme {
                 HomeScreen(
                     onViewMoreClick = {},
-                    onHeadlineItemClick = {},
+                    onItemClick = {},
                     onSearchClick = {},
                     openDrawer = {}
                 )

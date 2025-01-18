@@ -5,41 +5,48 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.bekhamdev.newsy.core.data.utils.SharedValues
-import com.bekhamdev.newsy.main.data.mappers.toHeadlineEntity
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
-import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
+import com.bekhamdev.newsy.main.data.local.entity.DiscoverEntity
+import com.bekhamdev.newsy.main.data.mappers.toDiscoverEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
-class HeadlineRemoteMediator(
+class DiscoverRemoteMediator(
     private val api: NewsApi,
     private val database: NewsyArticleDatabase,
-    private val country: String,
-    private val language: String
-) : RemoteMediator<Int, HeadlineEntity>() {
+    private val category: String,
+    private val language: String,
+    private val country: String
+): RemoteMediator<Int, DiscoverEntity>() {
     override suspend fun initialize(): InitializeAction {
         val cacheTimeout = TimeUnit.MILLISECONDS.convert(
             20, TimeUnit.MINUTES
         )
-
+        println("hola")
+        val creationTime = database.discoverDao().getCreationTime(category)
+        val categories = database.discoverDao().getAllDiscoverArticlesCategory()
+        val isCurrentCategoryAvailable = categories.contains(category)
         return if (
             System.currentTimeMillis()
             -
-            (database.headlineDao().getCreationTime() ?: 0)
-            < cacheTimeout
+            (creationTime ?: 0)
+            >
+            cacheTimeout
+            ||
+            !isCurrentCategoryAvailable
         ) {
-            InitializeAction.SKIP_INITIAL_REFRESH
-        } else {
             InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
         }
     }
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, HeadlineEntity>
+        state: PagingState<Int, DiscoverEntity>
     ): MediatorResult {
+
         val page = when (loadType) {
             LoadType.REFRESH -> state.anchorPosition?.let { position ->
                 state.closestPageToPosition(position)?.nextKey?.minus(1)
@@ -53,28 +60,30 @@ class HeadlineRemoteMediator(
         return try {
             val response = api.getArticles(
                 pageSize = state.config.pageSize,
-                category = SharedValues.HEADLINE_CATEGORY?.category,
+                category = category,
                 page = page,
                 country = country,
                 language = language
             )
 
-            val headlineArticles = response.articles
-            val endOfPaginationReached = headlineArticles.isEmpty()
+            val discoverArticles = response.articles
+            val endOfPaginationReached = discoverArticles.isEmpty()
             database.withTransaction {
                 database.apply {
-                        val articles = headlineArticles.map {
-                            it.toHeadlineEntity()
-                        }
-
-                        if (loadType == LoadType.REFRESH) {
-                        headlineDao().removeAllHeadlineArticles()
+                    val articles = discoverArticles.map {
+                        it.toDiscoverEntity(
+                            category = category
+                        )
                     }
-                    headlineDao().insertHeadlineArticles(
+                    if (loadType == LoadType.REFRESH) {
+                        discoverDao().removeAllDiscoverArticlesByCategory(category)
+                    }
+                    discoverDao().insertDiscoverArticles(
                         articles
                     )
                 }
             }
+
             MediatorResult.Success(endOfPaginationReached)
         } catch (error: Exception) {
             MediatorResult.Error(error)

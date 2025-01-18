@@ -4,10 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = "headline"
-)
-data class HeadlineEntity(
+@Entity(tableName = "discover")
+data class DiscoverEntity (
     @PrimaryKey
     val url: String,
 
@@ -27,8 +25,8 @@ data class HeadlineEntity(
     val urlToImage: String?,
 
     val favourite: Boolean = false,
+    val category: String,
 
     @ColumnInfo(name = "created_at")
     val createdAt: Long = System.currentTimeMillis()
 )
-

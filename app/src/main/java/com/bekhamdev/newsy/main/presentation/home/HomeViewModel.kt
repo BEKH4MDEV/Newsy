@@ -6,37 +6,56 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.bekhamdev.newsy.core.presentation.utils.countryCodeList
 import com.bekhamdev.newsy.core.presentation.utils.languageCodeList
+import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.domain.mapper.toArticleUi
+import com.bekhamdev.newsy.main.domain.useCase.DiscoverUseCases
 import com.bekhamdev.newsy.main.domain.useCase.HeadlineUseCases
 import com.bekhamdev.newsy.main.presentation.mappers.toArticle
-import dagger.hilt.android.HiltAndroidApp
+import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val headlineUseCases: HeadlineUseCases
+    private val headlineUseCases: HeadlineUseCases,
+    private val discoverUseCases: DiscoverUseCases
 ): ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
     val state = _state
+        .onStart {
+            loadAllArticles()
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = _state.value
+        )
 
-    init {
-        loadArticles()
-    }
-
-    private fun loadArticles() {
+    private fun loadAllArticles() {
         _state.update {
             it.copy(
                 headlineArticles = headlineUseCases
                     .fetchHeadlineArticleUseCase(
-                        category = it.selectedHeadlineCategory.category,
-                        country = countryCodeList[0].code,
-                        language = languageCodeList[0].code
+                        country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
+                        language = languageCodeList[0].code // TODO: SELECCIONAR LENGUAJE DINAMICAMENTE
+                    ).map { articles ->
+                        articles.map { article ->
+                            article.toArticleUi()
+                        }
+                    }.cachedIn(viewModelScope),
+                discoverArticles =
+                    discoverUseCases.fetchDiscoverArticlesUseCase(
+                        category = it.selectedDiscoverCategory,
+                        country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
+                        language = languageCodeList[0].code // TODO: SELECCIONAR LENGUAJE DINAMICAMENTE
                     ).map { articles ->
                         articles.map { article ->
                             article.toArticleUi()
@@ -46,23 +65,60 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: HomeEvents) {
+    fun onAction(event: HomeAction) {
         when(event) {
-            is HomeEvents.ArticleClicked -> TODO()
-            is HomeEvents.CategoryChange -> TODO()
-            is HomeEvents.OnHeadlineFavouriteChange -> {
-                val isFavourite = event.article.favourite
-                val articleUpdated = event.article.copy(
-                    favourite = !isFavourite
-                )
-                viewModelScope.launch {
-                    headlineUseCases.updateHeadlineFavouriteUseCase(
-                        article = articleUpdated.toArticle()
-                    )
-                }
+            is HomeAction.OnArticleClick -> TODO()
+            is HomeAction.OnCategoryChange -> {
+               updateCategory(event.category)
             }
-            is HomeEvents.PreferencePanelToggle -> TODO()
-            HomeEvents.ViewMoreClicked -> TODO()
+            is HomeAction.OnHeadlineFavouriteChange -> {
+                val articleUpdated = event.article.copy(
+                    favourite = !event.article.favourite
+                )
+                println(event.article)
+                updateFavouriteHeadline(articleUpdated)
+            }
+            is HomeAction.OnPreferencePanelToggle -> TODO()
+            HomeAction.OnViewMoreClick -> TODO()
+            is HomeAction.OnDiscoverFavouriteChange -> {
+                val articleUpdated = event.article.copy(
+                    favourite = !event.article.favourite
+                )
+                updateFavouriteDiscover(articleUpdated)
+            }
+        }
+    }
+
+    private fun updateCategory(category: ArticleCategory) {
+        _state.update {
+            it.copy(
+                selectedDiscoverCategory = category,
+                discoverArticles = discoverUseCases.fetchDiscoverArticlesUseCase(
+                    category = category,
+                    country = countryCodeList[0].code,
+                    language = languageCodeList[0].code
+                ).map { articles ->
+                    articles.map { article ->
+                        article.toArticleUi()
+                    }
+                }.cachedIn(viewModelScope)
+            )
+        }
+    }
+
+    private fun updateFavouriteHeadline(article: ArticleUi) {
+        viewModelScope.launch {
+            headlineUseCases.updateHeadlineArticleUseCase(
+                article = article.toArticle()
+            )
+        }
+    }
+
+    private fun updateFavouriteDiscover(article: ArticleUi) {
+        viewModelScope.launch {
+            discoverUseCases.updateDiscoverArticleUseCase(
+                article = article.toArticle()
+            )
         }
     }
 

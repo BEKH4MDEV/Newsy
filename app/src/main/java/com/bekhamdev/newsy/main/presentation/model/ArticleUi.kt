@@ -1,7 +1,6 @@
 package com.bekhamdev.newsy.main.presentation.model
 
 data class ArticleUi(
-    val id: Long,
     val author: String,
     val content: String,
     val description: String,
@@ -11,6 +10,5 @@ data class ArticleUi(
     val url: String,
     val urlToImage: String?,
     val favourite: Boolean,
-    val category: String,
-    val page: Int
+    val category: String?
 )

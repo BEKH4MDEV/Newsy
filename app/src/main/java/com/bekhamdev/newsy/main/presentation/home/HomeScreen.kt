@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.presentation.home.components.HomeTopBar
+import com.bekhamdev.newsy.main.presentation.home.components.discoverItems
 import com.bekhamdev.newsy.main.presentation.home.components.headlineItems
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -21,12 +23,13 @@ import com.bekhamdev.newsy.main.presentation.home.components.headlineItems
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     onViewMoreClick: () -> Unit,
-    onHeadlineItemClick: (id: Long) -> Unit,
+    onItemClick: (String) -> Unit,
     openDrawer: () -> Unit,
     onSearchClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val articles = state.headlineArticles.collectAsLazyPagingItems()
+    val headlineArticles = state.headlineArticles.collectAsLazyPagingItems()
+    val discoverArticles = state.discoverArticles.collectAsLazyPagingItems()
     val snackBarHostState = remember {
         SnackbarHostState()
     }
@@ -47,19 +50,40 @@ fun HomeScreen(
                 .padding(paddingValues)
         ) {
             headlineItems(
-                headlineArticles = articles,
+                headlineArticles = headlineArticles,
                 snackbarHostState = snackBarHostState,
                 onViewMoreClick = onViewMoreClick,
-                onHeadlineItemClick = onHeadlineItemClick,
+                onItemClick = onItemClick,
                 onFavouriteHeadlineChange = {
-                    viewModel.onEvent(
-                        HomeEvents.OnHeadlineFavouriteChange(
+                    viewModel.onAction(
+                        HomeAction.OnHeadlineFavouriteChange(
                             article = it
                         )
                     )
                 }
             )
 
+            discoverItems(
+                state = state,
+                categories = ArticleCategory.entries,
+                discoverArticles = discoverArticles,
+                snackbarHostState = snackBarHostState,
+                onItemClick = onItemClick,
+                onCategoryChange = {
+                    viewModel.onAction(
+                        HomeAction.OnCategoryChange(
+                            category = it
+                        )
+                    )
+                },
+                onFavouriteChange = {
+                    viewModel.onAction(
+                        HomeAction.OnDiscoverFavouriteChange(
+                            article = it
+                        )
+                    )
+                }
+            )
         }
     }
 }

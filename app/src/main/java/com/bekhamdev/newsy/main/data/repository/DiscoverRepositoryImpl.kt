@@ -7,42 +7,49 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.room.withTransaction
 import com.bekhamdev.newsy.core.data.utils.Constants
+import com.bekhamdev.newsy.core.data.utils.SharedValues
+import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
 import com.bekhamdev.newsy.main.data.mappers.toArticle
-import com.bekhamdev.newsy.main.data.paging.HeadlineRemoteMediator
+import com.bekhamdev.newsy.main.data.paging.DiscoverRemoteMediator
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
+import com.bekhamdev.newsy.main.domain.mapper.toDiscoverEntity
 import com.bekhamdev.newsy.main.domain.mapper.toHeadlineEntity
 import com.bekhamdev.newsy.main.domain.model.Article
-import com.bekhamdev.newsy.main.domain.repository.HeadlineRepository
+import com.bekhamdev.newsy.main.domain.repository.DiscoverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class HeadlineRepositoryImpl @Inject constructor(
+class DiscoverRepositoryImpl @Inject constructor(
     private val api: NewsApi,
     private val database: NewsyArticleDatabase
-): HeadlineRepository {
+): DiscoverRepository {
     @OptIn(ExperimentalPagingApi::class)
-    override fun fetchHeadlineArticles(
+    override fun fetchDiscoverArticles(
+        category: ArticleCategory,
         language: String,
         country: String
     ): Flow<PagingData<Article>> {
+        val categoryValue = category.category
+
         return Pager(
             PagingConfig(
-                pageSize = Constants.PAGE_SIZE_HEADLINE,
-                prefetchDistance = Constants.PREFETCH_DISTANCE_HEADLINE,
-                initialLoadSize = Constants.INITIAL_LOAD_SIZE_HEADLINE,
+                pageSize = Constants.PAGE_SIZE_DISCOVER,
+                prefetchDistance = Constants.PREFETCH_DISTANCE_DISCOVER,
+                initialLoadSize = Constants.INITIAL_LOAD_SIZE_DISCOVER,
             ),
-            remoteMediator = HeadlineRemoteMediator(
+            remoteMediator = DiscoverRemoteMediator(
                 api = api,
                 database = database,
+                category = categoryValue,
                 language = language,
                 country = country
             ),
             pagingSourceFactory = {
                 database
-                    .headlineDao()
-                    .getAllHeadlineArticles()
+                    .discoverDao()
+                    .getDiscoverArticlesByCategory(categoryValue)
             }
         ).flow.map { articles ->
             articles.map {
@@ -51,19 +58,21 @@ class HeadlineRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateHeadlineArticle(article: Article) {
+    override suspend fun updateDiscoverArticle(article: Article) {
         database.withTransaction {
-            database.headlineDao().updateHeadlineArticle(
-                article = article.toHeadlineEntity()
-            )
-
-            val articleFromDiscover = database
+            database
                 .discoverDao()
-                .getDiscoverArticleByUrl(article.url)
+                .updateDiscoverArticle(
+                    article = article.toDiscoverEntity()
+                )
 
-            if (articleFromDiscover != null) {
-                database.discoverDao().updateDiscoverArticle(
-                    article = articleFromDiscover.copy(
+            val articleFromHeadline = database
+                .headlineDao()
+                .getHeadlineArticleByUrl(article.url)
+
+            if (articleFromHeadline != null) {
+                database.headlineDao().updateHeadlineArticle(
+                    article = articleFromHeadline.copy(
                         favourite = article.favourite
                     )
                 )

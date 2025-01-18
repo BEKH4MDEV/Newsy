@@ -95,4 +95,6 @@ dependencies {
     implementation(libs.androidx.room.paging)
     //Navigation
     implementation(libs.androidx.navigation.compose)
+    //Placeholder
+    implementation(libs.accompanist.placeholder)
 }

@@ -6,33 +6,36 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HeadlineDao {
-    @Query("SELECT * FROM headline")
-    fun getAllHeadlineArticles(): PagingSource<Int, HeadlineEntity>
-
-    @Query("SELECT * FROM headline WHERE id = :id")
-    fun getHeadlineArticle(id: Int): Flow<HeadlineEntity>
-
     @Insert(
-        onConflict = OnConflictStrategy.REPLACE
+        onConflict = OnConflictStrategy.IGNORE
     )
     suspend fun insertHeadlineArticles(articles: List<HeadlineEntity>)
+
+    @Delete
+    suspend fun removeHeadlineArticle( // Sin usar
+        article: HeadlineEntity
+    )
+
+    @Update(
+        onConflict = OnConflictStrategy.REPLACE
+    )
+    suspend fun updateHeadlineArticle(article: HeadlineEntity)
+
+    @Query("SELECT * FROM headline WHERE url=:url")
+    suspend fun getHeadlineArticleByUrl(url: String): HeadlineEntity?
+
+    @Query("SELECT * FROM headline")
+    fun getAllHeadlineArticles(): PagingSource<Int, HeadlineEntity>
 
     @Query("DELETE FROM headline WHERE favourite=0")
     suspend fun removeAllHeadlineArticles()
 
-    @Delete
-    suspend fun removeFavouriteHeadlineArticle(
-        article: HeadlineEntity
-    )
-
-    @Query("UPDATE headline SET favourite = :isFavourite WHERE id = :id ")
-    suspend fun updateFavouriteArticle(isFavourite: Boolean, id: Long)
-
     @Query("SELECT created_at FROM headline ORDER BY created_at DESC LIMIT 1")
-    suspend fun getCreationTime(): Long
+    suspend fun getCreationTime(): Long?
 }

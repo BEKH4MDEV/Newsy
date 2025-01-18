@@ -5,16 +5,16 @@ import com.bekhamdev.newsy.main.data.remote.dto.ArticlesResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface HeadlineApi {
+interface NewsApi {
     companion object {
-        private const val HEADLINE_END_POINT = "top-headlines"
+        private const val NEWS_END_POINT = "top-headlines"
     }
 
-    @GET(HEADLINE_END_POINT)
-    suspend fun getHeadlines(
+    @GET(NEWS_END_POINT)
+    suspend fun getArticles(
         @Query("apiKey") apiKey: String = BuildConfig.API_KEY,
         @Query("country") country: String,
-        @Query("category") category: String,
+        @Query("category") category: String?,
         @Query("language") language: String,
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int,

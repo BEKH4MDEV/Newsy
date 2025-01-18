@@ -1,7 +1,7 @@
 package com.bekhamdev.newsy.di
 
 import com.bekhamdev.newsy.BuildConfig
-import com.bekhamdev.newsy.main.data.remote.api.HeadlineApi
+import com.bekhamdev.newsy.main.data.remote.api.NewsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -17,7 +17,7 @@ import javax.inject.Singleton
 object RemoteModule {
     @Provides
     @Singleton
-    fun provideHeadlineApi(): HeadlineApi {
+    fun provideHeadlineApi(): NewsApi {
         val contentType = "application/json".toMediaType()
         val json = Json {
             coerceInputValues = true
@@ -27,6 +27,6 @@ object RemoteModule {
             .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
-            .create(HeadlineApi::class.java)
+            .create(NewsApi::class.java)
     }
 }

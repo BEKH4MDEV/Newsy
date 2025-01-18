@@ -6,16 +6,14 @@ import com.bekhamdev.newsy.main.domain.repository.HeadlineRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class FetchHeadlineArticleUseCase @Inject constructor(
+class FetchHeadlineArticlesUseCase @Inject constructor(
     private val repository: HeadlineRepository
 ) {
     operator fun invoke(
-        category: String,
         language: String,
         country: String
     ): Flow<PagingData<Article>> {
-        return repository.fetchHeadlineArticle(
-            category = category,
+        return repository.fetchHeadlineArticles(
             language = language,
             country = country
         )

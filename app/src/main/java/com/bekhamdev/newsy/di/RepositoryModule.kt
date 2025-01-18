@@ -1,6 +1,8 @@
 package com.bekhamdev.newsy.di
 
+import com.bekhamdev.newsy.main.data.repository.DiscoverRepositoryImpl
 import com.bekhamdev.newsy.main.data.repository.HeadlineRepositoryImpl
+import com.bekhamdev.newsy.main.domain.repository.DiscoverRepository
 import com.bekhamdev.newsy.main.domain.repository.HeadlineRepository
 import dagger.Binds
 import dagger.Module
@@ -16,4 +18,10 @@ abstract class RepositoryModule {
     abstract fun bindHeadlineRepository(
         headlineRepositoryImpl: HeadlineRepositoryImpl
     ): HeadlineRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDiscoverRepository(
+        discoverRepositoryImpl: DiscoverRepositoryImpl
+    ): DiscoverRepository
 }

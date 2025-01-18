@@ -1,5 +1,6 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -74,7 +75,11 @@ fun HeadlineCard(
                     .padding(NewsyTheme.dimens.itemPadding)
             )
 
-            Row {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Column(
                     modifier = Modifier
                         .padding(NewsyTheme.dimens.itemPadding)

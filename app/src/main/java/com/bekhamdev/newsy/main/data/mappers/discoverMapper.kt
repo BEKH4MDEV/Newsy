@@ -1,9 +1,9 @@
 package com.bekhamdev.newsy.main.data.mappers
 
-import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
+import com.bekhamdev.newsy.main.data.local.entity.DiscoverEntity
 import com.bekhamdev.newsy.main.domain.model.Article
 
-fun HeadlineEntity.toArticle(): Article {
+fun DiscoverEntity.toArticle(): Article {
     return Article(
         author = author,
         content = content,
@@ -14,6 +14,6 @@ fun HeadlineEntity.toArticle(): Article {
         url = url,
         urlToImage = urlToImage,
         favourite = favourite,
-        category = null,
+        category = category
     )
 }

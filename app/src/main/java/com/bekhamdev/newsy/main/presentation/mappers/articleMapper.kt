@@ -5,17 +5,15 @@ import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 
 fun ArticleUi.toArticle(): Article {
     return Article(
-        id = id,
         author = author,
         content = content,
-        description = content,
-        publishedAt = content,
+        description = description,
+        publishedAt = publishedAt,
         sourceName = sourceName,
         title = title,
         url = url,
         urlToImage = urlToImage,
         favourite = favourite,
-        category = category,
-        page = page
+        category = category
     )
 }

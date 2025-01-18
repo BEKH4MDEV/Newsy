@@ -71,7 +71,6 @@ fun LazyListScope.headlineItems(
                 onCardClick = {
                     onItemClick(it.url)
                 },
-                onViewMoreClick = onViewMoreClick,
                 onFavouriteChange = onFavouriteHeadlineChange,
                 modifier = Modifier,
             )

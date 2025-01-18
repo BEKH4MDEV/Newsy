@@ -28,7 +28,7 @@ fun DiscoverItemsPlaceholder(
 ) {
     repeat(count) {
         Card(
-            modifier = Modifier
+            modifier = modifier
                 .padding(NewsyTheme.dimens.itemPadding)
                 .border(
                     width = 5.dp,

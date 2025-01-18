@@ -97,4 +97,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     //Placeholder
     implementation(libs.accompanist.placeholder)
+    //WindowsSizeClass
+    implementation("androidx.compose.material3:material3-window-size-class:1.3.1")
 }

@@ -15,12 +15,12 @@ fun PaginationLoadingItem(
         loadState is LoadState.Loading -> {
             onLoading()
         }
-        items.isEmpty() -> {
-            onLoading()
-        }
         loadState is LoadState.Error -> {
             onLoading()
             onError(loadState.error)
+        }
+        items.isEmpty() -> {
+            onLoading()
         }
     }
 }

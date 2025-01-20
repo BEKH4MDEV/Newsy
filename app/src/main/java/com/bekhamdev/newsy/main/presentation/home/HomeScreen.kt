@@ -1,15 +1,21 @@
 package com.bekhamdev.newsy.main.presentation.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -26,6 +32,7 @@ fun HomeScreen(
     onItemClick: (String) -> Unit,
     openDrawer: () -> Unit,
     onSearchClick: () -> Unit,
+    startPadding: Dp = 0.dp
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val headlineArticles = state.headlineArticles.collectAsLazyPagingItems()
@@ -33,22 +40,27 @@ fun HomeScreen(
     val snackBarHostState = remember {
         SnackbarHostState()
     }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(start = startPadding),
         snackbarHost = {
             SnackbarHost(snackBarHostState)
         },
         topBar = {
             HomeTopBar(
                 openDrawer = openDrawer,
-                onSearch = onSearchClick
+                onSearch = onSearchClick,
+                scrollBehavior = scrollBehavior
             )
         }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .padding(paddingValues),
-            userScrollEnabled = discoverArticles.itemCount != 0
+                .padding(paddingValues)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             headlineItems(
                 headlineArticles = headlineArticles,

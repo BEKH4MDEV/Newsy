@@ -11,8 +11,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.TopAppBarState
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -28,9 +26,8 @@ fun HomeTopBar(
     modifier: Modifier = Modifier,
     openDrawer: () -> Unit,
     onSearch: () -> Unit,
-    topAppBarState: TopAppBarState = rememberTopAppBarState(),
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults
-        .enterAlwaysScrollBehavior(topAppBarState),
+        .enterAlwaysScrollBehavior(),
 ) {
     val title = "Newsy"
     CenterAlignedTopAppBar(

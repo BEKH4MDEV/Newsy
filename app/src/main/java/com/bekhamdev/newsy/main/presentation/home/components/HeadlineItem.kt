@@ -32,7 +32,7 @@ fun HeadlineItem(
     modifier: Modifier = Modifier,
     onCardClick: (ArticleUi) -> Unit,
     onFavouriteChange: (ArticleUi) -> Unit,
-    pageCount : Int = SharedValues.PAGER_SIZE
+    pageCount : Int = SharedValues.PAGER_PAGE_COUNT
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,

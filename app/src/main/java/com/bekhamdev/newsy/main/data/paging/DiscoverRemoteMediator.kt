@@ -50,17 +50,14 @@ class DiscoverRemoteMediator(
         val page = when (loadType) {
             LoadType.REFRESH -> {
                 val remoteKey = getClosestRemoteKey(state)
-                println("refresh -> ${remoteKey?.nextKey?.minus(1) ?: 1}")
                 remoteKey?.nextKey?.minus(1) ?: 1
             }
             LoadType.PREPEND -> {
                 val remoteKey = getFirstRemoteKey()
-                println("prepend -> ${remoteKey?.prevKey ?: "no more data"}")
                 remoteKey?.prevKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
             LoadType.APPEND -> {
                 val remoteKey = getLastRemoteKey()
-                println("append -> ${remoteKey?.nextKey ?: "no more data"}")
                 remoteKey?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
         }

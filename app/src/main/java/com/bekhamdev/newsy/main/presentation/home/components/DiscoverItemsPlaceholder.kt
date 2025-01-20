@@ -16,8 +16,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.bekhamdev.newsy.core.domain.utils.SharedValues
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
@@ -25,8 +27,13 @@ import com.bekhamdev.newsy.ui.theme.NewsyTheme
 @Composable
 fun DiscoverItemsPlaceholder(
     modifier: Modifier = Modifier,
-    count: Int = SharedValues.DISCOVER_PLACEHOLDER_COUNT
 ) {
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val count = remember(screenHeight) {
+        (screenHeight / 100.dp).minus(1).toInt()
+    }
+
     repeat(count) {
         Card(
             modifier = modifier

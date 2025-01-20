@@ -19,12 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.bekhamdev.newsy.core.domain.utils.SharedValues
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
 @Composable
 fun DiscoverItemsPlaceholder(
     modifier: Modifier = Modifier,
-    count: Int = 4
+    count: Int = SharedValues.DISCOVER_PLACEHOLDER_COUNT
 ) {
     repeat(count) {
         Card(

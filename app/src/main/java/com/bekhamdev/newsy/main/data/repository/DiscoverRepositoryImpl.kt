@@ -7,14 +7,12 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import androidx.room.withTransaction
 import com.bekhamdev.newsy.core.data.utils.Constants
-import com.bekhamdev.newsy.core.data.utils.SharedValues
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
 import com.bekhamdev.newsy.main.data.mappers.toArticle
 import com.bekhamdev.newsy.main.data.paging.DiscoverRemoteMediator
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
 import com.bekhamdev.newsy.main.domain.mapper.toDiscoverEntity
-import com.bekhamdev.newsy.main.domain.mapper.toHeadlineEntity
 import com.bekhamdev.newsy.main.domain.model.Article
 import com.bekhamdev.newsy.main.domain.repository.DiscoverRepository
 import kotlinx.coroutines.flow.Flow

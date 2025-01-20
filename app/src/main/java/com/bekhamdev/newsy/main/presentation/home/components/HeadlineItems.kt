@@ -51,7 +51,9 @@ fun LazyListScope.headlineItems(
         val scope = rememberCoroutineScope()
         PaginationLoadingItem(
             loadState = loadState,
-            items = headlineArticles.itemSnapshotList.items,
+            items = headlineArticles
+                .itemSnapshotList
+                .items,
             onError = {
                 scope.launch {
                     Log.e("Error", it.message ?: "Unknown error")
@@ -65,7 +67,10 @@ fun LazyListScope.headlineItems(
     }
 
     item {
-        if (loadState is LoadState.NotLoading && headlineArticles.itemSnapshotList.items.isNotEmpty()) {
+        if (loadState is LoadState.NotLoading && headlineArticles
+            .itemSnapshotList
+            .items.isNotEmpty()
+            ) {
             HeadlineItem(
                 articles = headlineArticles.itemSnapshotList.items,
                 onCardClick = {

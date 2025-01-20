@@ -8,7 +8,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HeadlineDao {
@@ -30,12 +29,12 @@ interface HeadlineDao {
     @Query("SELECT * FROM headline WHERE url=:url")
     suspend fun getHeadlineArticleByUrl(url: String): HeadlineEntity?
 
-    @Query("SELECT * FROM headline")
+    @Query("SELECT * FROM headline ORDER BY published_at DESC")
     fun getAllHeadlineArticles(): PagingSource<Int, HeadlineEntity>
 
     @Query("DELETE FROM headline WHERE favourite=0")
     suspend fun removeAllHeadlineArticles()
 
-    @Query("SELECT created_at FROM headline ORDER BY created_at DESC LIMIT 1")
+    @Query("SELECT created_at FROM headline ORDER BY created_at ASC LIMIT 1")
     suspend fun getCreationTime(): Long?
 }

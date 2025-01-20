@@ -5,10 +5,11 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.bekhamdev.newsy.core.data.utils.SharedValues
-import com.bekhamdev.newsy.main.data.mappers.toHeadlineEntity
+import com.bekhamdev.newsy.core.domain.utils.SharedValues
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
 import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
+import com.bekhamdev.newsy.main.data.local.entity.HeadlineKeyEntity
+import com.bekhamdev.newsy.main.data.mappers.toHeadlineEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
 import java.util.concurrent.TimeUnit
 
@@ -40,14 +41,20 @@ class HeadlineRemoteMediator(
         loadType: LoadType,
         state: PagingState<Int, HeadlineEntity>
     ): MediatorResult {
+
         val page = when (loadType) {
-            LoadType.REFRESH -> state.anchorPosition?.let { position ->
-                state.closestPageToPosition(position)?.nextKey?.minus(1)
-            } ?: 1
-            LoadType.PREPEND -> state.pages.firstOrNull()?.prevKey
-                ?: return MediatorResult.Success(endOfPaginationReached = true)
-            LoadType.APPEND -> state.pages.lastOrNull()?.nextKey
-                ?: return MediatorResult.Success(endOfPaginationReached = true)
+            LoadType.REFRESH -> {
+                val remoteKey = getClosestRemoteKey(state)
+                remoteKey?.nextKey?.minus(1) ?: 1
+            }
+            LoadType.PREPEND -> {
+                val remoteKey = getFirstRemoteKey()
+                remoteKey?.prevKey ?: return MediatorResult.Success(endOfPaginationReached = true)
+            }
+            LoadType.APPEND -> {
+                val remoteKey = getLastRemoteKey()
+                remoteKey?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
+            }
         }
 
         return try {
@@ -63,21 +70,43 @@ class HeadlineRemoteMediator(
             val endOfPaginationReached = headlineArticles.isEmpty()
             database.withTransaction {
                 database.apply {
-                        val articles = headlineArticles.map {
-                            it.toHeadlineEntity()
-                        }
-
-                        if (loadType == LoadType.REFRESH) {
+                    if (loadType == LoadType.REFRESH) {
                         headlineDao().removeAllHeadlineArticles()
+                        headlineKeyDao().clearRemoteKeys()
+                    }
+                    val articles = headlineArticles.map {
+                        it.toHeadlineEntity()
+                    }
+                    val keys = articles.map { article ->
+                        HeadlineKeyEntity(
+                            url = article.url,
+                            prevKey = if (page == 1) null else page - 1,
+                            nextKey = if (endOfPaginationReached) null else page + 1
+                        )
                     }
                     headlineDao().insertHeadlineArticles(
                         articles
                     )
+                    headlineKeyDao().insertAll(keys)
                 }
             }
             MediatorResult.Success(endOfPaginationReached)
         } catch (error: Exception) {
             MediatorResult.Error(error)
         }
+    }
+
+    private suspend fun getClosestRemoteKey(state: PagingState<Int, HeadlineEntity>): HeadlineKeyEntity? {
+        val anchorPosition = state.anchorPosition ?: return null
+        val closestItem = state.closestItemToPosition(anchorPosition) ?: return null
+        return database.headlineKeyDao().getRemoteKeyByUrl(closestItem.url)
+    }
+
+    private suspend fun getFirstRemoteKey(): HeadlineKeyEntity? {
+        return database.headlineKeyDao().getFirstRemoteKey()
+    }
+
+    private suspend fun getLastRemoteKey(): HeadlineKeyEntity? {
+        return database.headlineKeyDao().getLastRemoteKey()
     }
 }

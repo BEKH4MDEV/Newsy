@@ -47,7 +47,8 @@ fun HomeScreen(
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
-                .padding(paddingValues)
+                .padding(paddingValues),
+            userScrollEnabled = discoverArticles.itemCount != 0
         ) {
             headlineItems(
                 headlineArticles = headlineArticles,

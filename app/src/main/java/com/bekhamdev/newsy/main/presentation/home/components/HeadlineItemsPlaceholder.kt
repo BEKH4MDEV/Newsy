@@ -24,10 +24,11 @@ import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
 @Composable
 fun HeadlineItemsPlaceholder(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    count: Int = 3,
 ) {
 
-    val items = listOf(true, true, true)
+    val items = (0..count).toList()
 
     val pagerState = rememberPagerState(
         initialPage = 1,

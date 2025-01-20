@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.bekhamdev.newsy.core.domain.utils.SharedValues
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 import kotlinx.coroutines.Dispatchers
@@ -30,23 +31,21 @@ fun HeadlineItem(
     articles: List<ArticleUi>,
     modifier: Modifier = Modifier,
     onCardClick: (ArticleUi) -> Unit,
-    onFavouriteChange: (ArticleUi) -> Unit
+    onFavouriteChange: (ArticleUi) -> Unit,
+    pageCount : Int = SharedValues.PAGER_SIZE
 ) {
-    val articlesSize = remember(articles) {
-        articles.size
-    }
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { articlesSize }
+        pageCount = { pageCount }
     )
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(pagerState.currentPage, articlesSize) {
+    LaunchedEffect(pagerState.currentPage, pageCount) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             withContext(Dispatchers.Main.immediate) {
                 delay(6000L)
-                val nextPage = if (pagerState.currentPage + 1 < articlesSize) {
+                val nextPage = if (pagerState.currentPage + 1 < pageCount) {
                     pagerState.currentPage + 1
                 } else {
                     0

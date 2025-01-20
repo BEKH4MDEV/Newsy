@@ -70,22 +70,21 @@ fun LazyListScope.discoverItems(
         )
     }
 
-    items(discoverArticles.itemSnapshotList) {
-        it?.let {
-            if (loadState is LoadState.NotLoading
-                &&
-                discoverArticles.itemSnapshotList.items.isNotEmpty()
-                ) {
-                DiscoverArticleItem(
-                    article = it,
-                    onClick = { article ->
-                        onItemClick(article.url)
-                    },
-                    onFavouriteChange = onFavouriteChange,
-                    modifier = Modifier
-                        .padding(horizontal = NewsyTheme.dimens.mediumPadding)
-                )
-            }
+    items(discoverArticles.itemCount) {index ->
+        val article = discoverArticles[index]
+        if (loadState is LoadState.NotLoading
+            &&
+            article != null
+        ) {
+            DiscoverArticleItem(
+                article = article,
+                onClick = {
+                    onItemClick(it.url)
+                },
+                onFavouriteChange = onFavouriteChange,
+                modifier = Modifier
+                    .padding(horizontal = NewsyTheme.dimens.mediumPadding)
+            )
         }
     }
 }

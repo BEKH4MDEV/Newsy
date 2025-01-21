@@ -70,12 +70,8 @@ class DiscoverRemoteMediator(
                 country = country,
                 language = language
             )
-
-            println(state.config.pageSize)
-
             val discoverArticles = response.articles
             val endOfPaginationReached = discoverArticles.isEmpty()
-            println(endOfPaginationReached)
             database.withTransaction {
                 database.apply {
                     if (loadType == LoadType.REFRESH) {

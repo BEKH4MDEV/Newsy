@@ -10,7 +10,6 @@ fun PaginationLoadingItem(
     items: List<Any>,
     onLoading: @Composable () -> Unit,
 ) {
-
     when {
         loadState is LoadState.Loading -> {
             onLoading()

@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import com.bekhamdev.newsy.core.domain.utils.SharedValues
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
 @Composable
@@ -31,7 +30,7 @@ fun DiscoverItemsPlaceholder(
 
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val count = remember(screenHeight) {
-        (screenHeight / 100.dp).minus(1).toInt()
+        (screenHeight / 115.dp).minus(1).toInt()
     }
 
     repeat(count) {
@@ -47,7 +46,7 @@ fun DiscoverItemsPlaceholder(
         ) {
             Row(
                 modifier = Modifier
-                    .height(100.dp)
+                    .height(115.dp)
 
             ) {
                 Box(

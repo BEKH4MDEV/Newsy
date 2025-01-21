@@ -3,8 +3,6 @@ package com.bekhamdev.newsy.main.presentation.home.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -60,7 +58,7 @@ fun DiscoverArticleItem(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(150.dp)
-                    .height(100.dp)
+                    .height(115.dp)
             )
             DiscoverArticleDetail(
                 article = article,

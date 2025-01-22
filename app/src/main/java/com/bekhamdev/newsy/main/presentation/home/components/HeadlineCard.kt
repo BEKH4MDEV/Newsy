@@ -55,7 +55,6 @@ fun HeadlineCard(
         onClick = { onCardClick(article) }
     ) {
         Column {
-
             AsyncImage(
                 model = imgRequest,
                 placeholder = painterResource(R.drawable.ideogram_2_),

@@ -10,12 +10,9 @@ fun PaginationLoadingItem(
     items: List<Any>,
     onLoading: @Composable () -> Unit,
 ) {
+
     when {
-        loadState is LoadState.Loading -> {
-            onLoading()
-        }
         loadState is LoadState.Error -> {
-            onLoading()
             onError(loadState.error)
         }
         items.isEmpty() -> {

@@ -1,6 +1,5 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
@@ -28,7 +27,7 @@ fun HeadlineItem(
     modifier: Modifier = Modifier,
     onCardClick: (ArticleUi) -> Unit,
     onFavouriteChange: (ArticleUi) -> Unit,
-    pageCount : Int = SharedValues.PAGER_PAGE_COUNT
+    pageCount: Int = SharedValues.PAGER_PAGE_COUNT
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -55,23 +54,20 @@ fun HeadlineItem(
         }
     }
 
-    Column(
+    HorizontalPager(
         modifier = modifier
             .fillMaxWidth(),
-    ) {
-        HorizontalPager(
-            state = pagerState,
-            contentPadding = PaddingValues(NewsyTheme.dimens.defaultPadding),
-            beyondViewportPageCount = 1,
-            pageSize = PageSize.Fill,
-            pageSpacing = NewsyTheme.dimens.itemSpacing,
-        ) { page ->
-            HeadlineCard(
-                article = articles[page],
-                onCardClick = onCardClick,
-                onFavouriteChange = onFavouriteChange
-            )
-        }
+        state = pagerState,
+        contentPadding = PaddingValues(NewsyTheme.dimens.defaultPadding),
+        beyondViewportPageCount = 1,
+        pageSize = PageSize.Fill,
+        pageSpacing = NewsyTheme.dimens.itemSpacing,
+    ) { page ->
+        HeadlineCard(
+            article = articles[page],
+            onCardClick = onCardClick,
+            onFavouriteChange = onFavouriteChange
+        )
     }
 }
 

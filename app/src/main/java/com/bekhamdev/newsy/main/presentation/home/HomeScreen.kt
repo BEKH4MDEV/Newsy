@@ -11,6 +11,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,6 +38,7 @@ fun HomeScreen(
     val snackBarHostState = remember {
         SnackbarHostState()
     }
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -59,6 +61,7 @@ fun HomeScreen(
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
             headlineItems(
+                scope = scope,
                 headlineArticles = headlineArticles,
                 snackbarHostState = snackBarHostState,
                 onViewMoreClick = onViewMoreClick,
@@ -73,6 +76,7 @@ fun HomeScreen(
             )
 
             discoverItems(
+                scope = scope,
                 state = state,
                 categories = ArticleCategory.entries,
                 discoverArticles = discoverArticles,

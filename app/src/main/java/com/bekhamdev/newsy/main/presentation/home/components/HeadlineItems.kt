@@ -22,16 +22,18 @@ import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 fun LazyListScope.headlineItems(
     headlineArticles: LazyPagingItems<ArticleUi>,
+    scope: CoroutineScope,
     snackbarHostState: SnackbarHostState,
     onViewMoreClick: () -> Unit,
     onItemClick: (String) -> Unit,
     onFavouriteHeadlineChange: (ArticleUi) -> Unit
 ) {
-    val loadState = headlineArticles.loadState.refresh
+    val loadState = headlineArticles.loadState.mediator?.refresh
 
     item {
         HeaderTitle(
@@ -44,7 +46,6 @@ fun LazyListScope.headlineItems(
     }
 
     item {
-        val scope = rememberCoroutineScope()
         PaginationLoadingItem(
             loadState = loadState,
             items = headlineArticles
@@ -63,10 +64,7 @@ fun LazyListScope.headlineItems(
     }
 
     item {
-        if (loadState is LoadState.NotLoading && headlineArticles
-            .itemSnapshotList
-            .items.isNotEmpty()
-            ) {
+        if (headlineArticles.itemSnapshotList.items.isNotEmpty()) {
             HeadlineItem(
                 articles = headlineArticles.itemSnapshotList.items,
                 onCardClick = {

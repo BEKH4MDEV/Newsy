@@ -21,10 +21,12 @@ import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.presentation.home.HomeState
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 fun LazyListScope.discoverItems(
     state: HomeState,
+    scope: CoroutineScope,
     categories: List<ArticleCategory>,
     discoverArticles: LazyPagingItems<ArticleUi>,
     snackbarHostState: SnackbarHostState,
@@ -55,7 +57,6 @@ fun LazyListScope.discoverItems(
     }
 
     item {
-        val scope = rememberCoroutineScope()
         PaginationLoadingItem(
             loadState = loadState,
             items = discoverArticles.itemSnapshotList.items,
@@ -67,7 +68,7 @@ fun LazyListScope.discoverItems(
             onLoading = {
                 Box(
                     modifier = modifier
-                        .height(150.dp)
+                        .height(55.dp)
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
@@ -79,14 +80,11 @@ fun LazyListScope.discoverItems(
 
     items(discoverArticles.itemCount) { index ->
         val article = discoverArticles[index]
-        if (loadState is LoadState.NotLoading
-            &&
-            article != null
-        ) {
+        article?.let {
             DiscoverArticleItem(
-                article = article,
-                onClick = {
-                    onItemClick(it.url)
+                article = it,
+                onClick = { article ->
+                    onItemClick(article.url)
                 },
                 onFavouriteChange = onFavouriteChange,
                 modifier = Modifier

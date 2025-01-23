@@ -12,4 +12,5 @@ data class HomeState(
     val headlineArticles: Flow<PagingData<ArticleUi>> = emptyFlow(),
     val discoverArticles: Flow<PagingData<ArticleUi>> = emptyFlow(),
     val selectedDiscoverCategory: ArticleCategory = ArticleCategory.entries.first(),
+    val isFirstLoad: Boolean = true
 )

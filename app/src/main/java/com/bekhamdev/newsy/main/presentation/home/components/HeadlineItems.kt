@@ -1,6 +1,5 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -12,28 +11,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 fun LazyListScope.headlineItems(
     headlineArticles: LazyPagingItems<ArticleUi>,
-    scope: CoroutineScope,
-    snackbarHostState: SnackbarHostState,
     onViewMoreClick: () -> Unit,
     onItemClick: (String) -> Unit,
     onFavouriteHeadlineChange: (ArticleUi) -> Unit
 ) {
-    val loadState = headlineArticles.loadState.mediator?.refresh
 
     item {
         HeaderTitle(
@@ -46,25 +37,15 @@ fun LazyListScope.headlineItems(
     }
 
     item {
-        PaginationLoadingItem(
-            loadState = loadState,
-            items = headlineArticles
-                .itemSnapshotList
-                .items,
-            onError = {
-                scope.launch {
-                    Log.e("Error", it.message ?: "Unknown error")
-                    snackbarHostState.showSnackbar(it.message ?: "Unknown error")
-                }
-            },
-            onLoading = {
-               HeadlineItemsPlaceholder()
+        when {
+            headlineArticles.itemCount == 0 -> {
+                HeadlineItemsPlaceholder()
             }
-        )
+        }
     }
 
     item {
-        if (headlineArticles.itemSnapshotList.items.isNotEmpty()) {
+        if (headlineArticles.itemCount > 0) {
             HeadlineItem(
                 articles = headlineArticles.itemSnapshotList.items,
                 onCardClick = {

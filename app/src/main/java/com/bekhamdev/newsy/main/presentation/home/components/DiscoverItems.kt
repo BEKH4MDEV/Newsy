@@ -1,41 +1,28 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Newspaper
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.presentation.home.HomeState
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 fun LazyListScope.discoverItems(
     state: HomeState,
-    scope: CoroutineScope,
     categories: List<ArticleCategory>,
     discoverArticles: LazyPagingItems<ArticleUi>,
-    snackbarHostState: SnackbarHostState,
     onItemClick: (String) -> Unit,
     onCategoryChange: (ArticleCategory) -> Unit,
-    onFavouriteChange: (ArticleUi) -> Unit,
-    modifier: Modifier = Modifier
+    onFavouriteChange: (ArticleUi) -> Unit
 ) {
-    val loadState = discoverArticles.loadState.mediator?.refresh
+    val loadStateMediator = discoverArticles.loadState.mediator?.refresh
 
     item {
         HeaderTitle(
@@ -57,25 +44,17 @@ fun LazyListScope.discoverItems(
     }
 
     item {
-        PaginationLoadingItem(
-            loadState = loadState,
-            items = discoverArticles.itemSnapshotList.items,
-            onError = {
-                scope.launch {
-                    snackbarHostState.showSnackbar(it.message ?: "Unknown error")
-                }
-            },
-            onLoading = {
-                Box(
-                    modifier = modifier
-                        .height(55.dp)
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+        when {
+            loadStateMediator is LoadState.Loading
+                    && discoverArticles.itemCount == 0 -> {
+                DiscoverItemsPlaceholder()
             }
-        )
+
+            loadStateMediator is LoadState.Error
+                    && discoverArticles.itemCount == 0 -> {
+                DiscoverItemsPlaceholder()
+            }
+        }
     }
 
     items(discoverArticles.itemCount) { index ->

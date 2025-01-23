@@ -35,6 +35,6 @@ interface HeadlineDao {
     @Query("DELETE FROM headline WHERE favourite=0")
     suspend fun removeAllHeadlineArticles()
 
-    @Query("SELECT created_at FROM headline ORDER BY created_at ASC LIMIT 1")
+    @Query("SELECT created_at FROM headline ORDER BY created_at DESC LIMIT 1")
     suspend fun getCreationTime(): Long?
 }

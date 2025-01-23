@@ -60,7 +60,8 @@ class HomeViewModel @Inject constructor(
                         articles.map { article ->
                             article.toArticleUi()
                         }
-                    }.cachedIn(viewModelScope)
+                    }.cachedIn(viewModelScope),
+                isFirstLoad = false
             )
         }
     }
@@ -75,7 +76,6 @@ class HomeViewModel @Inject constructor(
                 val articleUpdated = event.article.copy(
                     favourite = !event.article.favourite
                 )
-                println(event.article)
                 updateFavouriteHeadline(articleUpdated)
             }
             is HomeAction.OnPreferencePanelToggle -> TODO()

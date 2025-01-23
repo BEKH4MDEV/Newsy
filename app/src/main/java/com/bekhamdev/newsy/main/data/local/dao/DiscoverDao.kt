@@ -34,7 +34,7 @@ interface DiscoverDao {
     @Query("DELETE FROM discover WHERE favourite = 0 AND category = :category")
     suspend fun removeAllDiscoverArticlesByCategory(category: String)
 
-    @Query("SELECT created_at FROM discover WHERE category = :category ORDER BY created_at ASC LIMIT 1")
+    @Query("SELECT created_at FROM discover WHERE category = :category ORDER BY created_at DESC LIMIT 1")
     suspend fun getCreationTime(category: String): Long?
 
     @Query("SELECT DISTINCT category FROM discover")

@@ -27,12 +27,9 @@ class DiscoverRemoteMediator(
         val creationTime = database.discoverDao().getCreationTime(category)
         val categories = database.discoverDao().getAllDiscoverArticlesCategory()
         val isCurrentCategoryAvailable = categories.contains(category)
+        val timeOut = System.currentTimeMillis() - (creationTime ?: 0) > cacheTimeout
         return if (
-            System.currentTimeMillis()
-            -
-            (creationTime ?: 0)
-            >
-            cacheTimeout
+            timeOut
             ||
             !isCurrentCategoryAvailable
         ) {

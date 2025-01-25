@@ -7,12 +7,12 @@ import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 
 fun Article.toArticleUi(): ArticleUi {
     return ArticleUi(
-        author = author ?: "Unknown author",
-        content = content ?: "This article has no content",
-        description = description ?: "This article has no description",
-        publishedAt = publishedAt ?: "Unknown Date",
-        sourceName = sourceName ?: "Unknown Source",
-        title = title ?: "This article has no title",
+        author = if (author.isNullOrEmpty()) "Unknown author" else author,
+        content = if (content.isNullOrEmpty()) "This article has no content" else content,
+        description = if (description.isNullOrEmpty()) "This article has no description" else description,
+        publishedAt = if (publishedAt.isNullOrEmpty()) "Unknown Date" else publishedAt,
+        sourceName = if (sourceName.isNullOrEmpty()) "Unknown Source" else sourceName,
+        title = if (title.isNullOrEmpty()) "This article has no title" else title,
         url = url,
         urlToImage = urlToImage,
         favourite = favourite,

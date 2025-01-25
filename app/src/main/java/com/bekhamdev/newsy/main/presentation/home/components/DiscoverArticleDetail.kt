@@ -1,8 +1,10 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -14,7 +16,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import com.bekhamdev.newsy.core.presentation.utils.formatPublishedAtDate
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
@@ -37,13 +41,11 @@ fun DiscoverArticleDetail(
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .padding(NewsyTheme.dimens.itemPadding)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            modifier = Modifier
-                .padding(
-                    horizontal = NewsyTheme.dimens.itemPadding
-                ),
             text = article.title,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
@@ -54,16 +56,15 @@ fun DiscoverArticleDetail(
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(NewsyTheme.dimens.itemPadding)
-            ) {
+            Column {
                 Text(
                     text = article.sourceName,
                     fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.tertiary
                 )
                 Text(
                     text = publishedAt,

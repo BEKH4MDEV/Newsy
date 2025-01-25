@@ -52,7 +52,7 @@ fun HeadlineItemsPlaceholder(
                     shape = CardDefaults.shape
                 )
                 .fillMaxWidth()
-                .height(257.dp)
+                .height(260.dp)
         ) {
             Column {
                 Box(

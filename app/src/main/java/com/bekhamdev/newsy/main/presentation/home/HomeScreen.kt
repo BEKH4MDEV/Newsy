@@ -20,22 +20,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
+import com.bekhamdev.newsy.core.navigation.Route
 import com.bekhamdev.newsy.main.presentation.home.components.HomeTopBar
 import com.bekhamdev.newsy.main.presentation.home.components.discoverItems
 import com.bekhamdev.newsy.main.presentation.home.components.headlineItems
+import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
+    state: HomeState,
     onViewMoreClick: () -> Unit,
-    onItemClick: (String) -> Unit,
     openDrawer: () -> Unit,
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onAction: (HomeAction) -> Unit
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
     val headlineArticles = state.headlineArticles.collectAsLazyPagingItems()
     val discoverArticles = state.discoverArticles.collectAsLazyPagingItems()
     val snackBarHostState = remember {
@@ -137,33 +138,35 @@ fun HomeScreen(
             headlineItems(
                 headlineArticles = headlineArticles,
                 onViewMoreClick = onViewMoreClick,
-                onItemClick = onItemClick,
+                onItemClick = {
+                    onAction(
+                        HomeAction.OnArticleClick(it)
+                    )
+                },
                 onFavouriteHeadlineChange = {
-                    viewModel.onAction(
-                        HomeAction.OnHeadlineFavouriteChange(
-                            article = it
-                        )
+                    onAction(
+                        HomeAction.OnHeadlineFavouriteChange(it)
                     )
                 }
             )
 
             discoverItems(
-                state = state,
+                selectedDiscoverCategory = state.selectedDiscoverCategory,
                 categories = ArticleCategory.entries,
                 discoverArticles = discoverArticles,
-                onItemClick = onItemClick,
-                onCategoryChange = {
-                    viewModel.onAction(
-                        HomeAction.OnCategoryChange(
-                            category = it
-                        )
+                onItemClick = {
+                    onAction(
+                        HomeAction.OnArticleClick(it)
                     )
                 },
-                onFavouriteChange = {
-                    viewModel.onAction(
-                        HomeAction.OnDiscoverFavouriteChange(
-                            article = it
-                        )
+                onCategoryChange = {
+                    onAction(
+                        HomeAction.OnCategoryChange(it)
+                    )
+                },
+                onFavouriteDiscoverChange = {
+                    onAction(
+                        HomeAction.OnDiscoverFavouriteChange(it)
                     )
                 }
             )

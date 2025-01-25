@@ -22,7 +22,7 @@ import com.bekhamdev.newsy.ui.theme.NewsyTheme
 fun LazyListScope.headlineItems(
     headlineArticles: LazyPagingItems<ArticleUi>,
     onViewMoreClick: () -> Unit,
-    onItemClick: (String) -> Unit,
+    onItemClick: (ArticleUi) -> Unit,
     onFavouriteHeadlineChange: (ArticleUi) -> Unit
 ) {
 
@@ -48,9 +48,7 @@ fun LazyListScope.headlineItems(
         if (headlineArticles.itemCount > 0) {
             HeadlineItem(
                 articles = headlineArticles.itemSnapshotList.items,
-                onCardClick = {
-                    onItemClick(it.url)
-                },
+                onCardClick = onItemClick,
                 onFavouriteChange = onFavouriteHeadlineChange,
                 modifier = Modifier,
             )
@@ -58,7 +56,7 @@ fun LazyListScope.headlineItems(
 
         Box(
             modifier = Modifier
-                .padding(end = NewsyTheme.dimens.mediumPadding)
+                .padding(end = NewsyTheme.dimens.defaultPadding)
                 .fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {

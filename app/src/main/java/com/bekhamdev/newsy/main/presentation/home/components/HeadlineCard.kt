@@ -3,6 +3,7 @@ package com.bekhamdev.newsy.main.presentation.home.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -42,16 +44,17 @@ fun HeadlineCard(
         .build()
 
     val favouriteIcon = if (article.favourite)
-                            Icons.Default.BookmarkAdded
-                        else
-                            Icons.Default.Bookmark
+        Icons.Default.BookmarkAdded
+    else
+        Icons.Default.Bookmark
 
     val publishedAt = remember(article.publishedAt) {
         formatPublishedAtDate(article.publishedAt)
     }
 
     Card(
-        modifier = modifier,
+        modifier = modifier
+            .height(260.dp),
         onClick = { onCardClick(article) }
     ) {
         Column {
@@ -64,43 +67,46 @@ fun HeadlineCard(
                 modifier = Modifier
                     .height(150.dp)
             )
-
-            Text(
-                text = article.title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                fontWeight = FontWeight.Bold,
+            Column(
                 modifier = Modifier
                     .padding(NewsyTheme.dimens.itemPadding)
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(
-                    modifier = Modifier
-                        .padding(NewsyTheme.dimens.itemPadding)
-                ) {
-                    Text(
-                        text = article.sourceName,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = publishedAt,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
+                Text(
+                    text = article.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    fontWeight = FontWeight.Bold,
+                )
 
-                IconButton(
-                    onClick = { onFavouriteChange(article) }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = favouriteIcon,
-                        contentDescription = "favourite"
-                    )
+                    Column {
+                        Text(
+                            text = article.sourceName,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                        Text(
+                            text = publishedAt,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    IconButton(
+                        onClick = { onFavouriteChange(article) }
+                    ) {
+                        Icon(
+                            imageVector = favouriteIcon,
+                            contentDescription = "favourite"
+                        )
+                    }
                 }
             }
         }

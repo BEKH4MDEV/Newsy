@@ -46,6 +46,7 @@ fun DiscoverArticleItem(
     ) {
         Row(
             modifier = Modifier
+                .height(115.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -58,7 +59,6 @@ fun DiscoverArticleItem(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(150.dp)
-                    .height(115.dp)
             )
             DiscoverArticleDetail(
                 article = article,

@@ -10,8 +10,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
+import com.bekhamdev.newsy.core.navigation.NavController
 import com.bekhamdev.newsy.core.presentation.utils.calculateLandscapePadding
-import com.bekhamdev.newsy.main.presentation.home.HomeScreen
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,12 +28,7 @@ class MainActivity : ComponentActivity() {
                 windowSize = windowWidthSizeClass
             ) {
                 val paddingValues = calculateLandscapePadding()
-
-                HomeScreen(
-                    onViewMoreClick = {},
-                    onItemClick = {},
-                    onSearchClick = {},
-                    openDrawer = {},
+                NavController(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background)
                         .padding(paddingValues)

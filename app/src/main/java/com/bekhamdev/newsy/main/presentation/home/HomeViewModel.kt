@@ -68,7 +68,13 @@ class HomeViewModel @Inject constructor(
 
     fun onAction(event: HomeAction) {
         when(event) {
-            is HomeAction.OnArticleClick -> TODO()
+            is HomeAction.OnArticleClick -> {
+                _state.update {
+                    it.copy(
+                        articleSelected = event.article
+                    )
+                }
+            }
             is HomeAction.OnCategoryChange -> {
                updateCategory(event.category)
             }
@@ -76,10 +82,14 @@ class HomeViewModel @Inject constructor(
                 val articleUpdated = event.article.copy(
                     favourite = !event.article.favourite
                 )
+                _state.update {
+                    it.copy(
+                        articleSelected = it.articleSelected?.copy(favourite = !it.articleSelected.favourite)
+                    )
+                }
                 updateFavouriteHeadline(articleUpdated)
             }
             is HomeAction.OnPreferencePanelToggle -> TODO()
-            HomeAction.OnViewMoreClick -> TODO()
             is HomeAction.OnDiscoverFavouriteChange -> {
                 val articleUpdated = event.article.copy(
                     favourite = !event.article.favourite

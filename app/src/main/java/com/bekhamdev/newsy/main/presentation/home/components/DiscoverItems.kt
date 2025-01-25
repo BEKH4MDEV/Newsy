@@ -10,17 +10,16 @@ import androidx.compose.ui.Modifier
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
-import com.bekhamdev.newsy.main.presentation.home.HomeState
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
 fun LazyListScope.discoverItems(
-    state: HomeState,
+    selectedDiscoverCategory: ArticleCategory,
     categories: List<ArticleCategory>,
     discoverArticles: LazyPagingItems<ArticleUi>,
-    onItemClick: (String) -> Unit,
+    onItemClick: (ArticleUi) -> Unit,
     onCategoryChange: (ArticleCategory) -> Unit,
-    onFavouriteChange: (ArticleUi) -> Unit
+    onFavouriteDiscoverChange: (ArticleUi) -> Unit
 ) {
     val loadStateMediator = discoverArticles.loadState.mediator?.refresh
 
@@ -33,12 +32,12 @@ fun LazyListScope.discoverItems(
             modifier = Modifier.size(NewsyTheme.dimens.itemSpacing)
         )
         DiscoverShips(
-            selectCategory = state.selectedDiscoverCategory,
+            selectCategory = selectedDiscoverCategory,
             categories = categories,
             onCategoryChange = onCategoryChange,
             modifier = Modifier
                 .padding(
-                    horizontal = NewsyTheme.dimens.mediumPadding
+                    horizontal = NewsyTheme.dimens.defaultPadding
                 )
         )
     }
@@ -62,12 +61,10 @@ fun LazyListScope.discoverItems(
         article?.let {
             DiscoverArticleItem(
                 article = it,
-                onClick = { article ->
-                    onItemClick(article.url)
-                },
-                onFavouriteChange = onFavouriteChange,
+                onClick = onItemClick,
+                onFavouriteChange = onFavouriteDiscoverChange,
                 modifier = Modifier
-                    .padding(horizontal = NewsyTheme.dimens.mediumPadding)
+                    .padding(horizontal = NewsyTheme.dimens.defaultPadding)
             )
         }
     }

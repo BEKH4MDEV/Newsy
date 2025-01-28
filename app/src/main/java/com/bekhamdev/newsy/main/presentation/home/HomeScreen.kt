@@ -9,23 +9,14 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.paging.LoadState
-import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
-import com.bekhamdev.newsy.core.navigation.Route
 import com.bekhamdev.newsy.main.presentation.home.components.HomeTopBar
 import com.bekhamdev.newsy.main.presentation.home.components.discoverItems
 import com.bekhamdev.newsy.main.presentation.home.components.headlineItems
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,91 +26,17 @@ fun HomeScreen(
     openDrawer: () -> Unit,
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onAction: (HomeAction) -> Unit
+    onAction: (HomeAction) -> Unit,
+    headlineArticles: LazyPagingItems<ArticleUi>,
+    discoverArticles: LazyPagingItems<ArticleUi>,
+    snackbarHostState: SnackbarHostState
 ) {
-    val headlineArticles = state.headlineArticles.collectAsLazyPagingItems()
-    val discoverArticles = state.discoverArticles.collectAsLazyPagingItems()
-    val snackBarHostState = remember {
-        SnackbarHostState()
-    }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val loadStateHeadline = headlineArticles.loadState.mediator
-    val loadStateDiscover = discoverArticles.loadState.mediator
-    val scope = rememberCoroutineScope()
-
-    //I know what you think when you see two LaunchedEffects doing the same thing but it is necessary
-    LaunchedEffect(loadStateDiscover) {
-        val currentSnackbarData = snackBarHostState.currentSnackbarData
-        if (currentSnackbarData == null) {
-            if (loadStateDiscover?.hasError == true) {
-                val (refresh, prepend, append) = loadStateDiscover
-                when {
-                    refresh is LoadState.Error -> {
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                message = refresh.error.message ?: "Unknown error"
-                            )
-                        }
-                    }
-
-                    prepend is LoadState.Error -> {
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                message = prepend.error.message ?: "Unknown error"
-                            )
-                        }
-                    }
-
-                    append is LoadState.Error -> {
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                message = append.error.message ?: "Unknown error"
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-    //I know what you think when you see two LaunchedEffects doing the same thing but it is necessary
-    LaunchedEffect(loadStateHeadline) {
-        val currentSnackbarData = snackBarHostState.currentSnackbarData
-        if (currentSnackbarData == null) {
-            if (loadStateHeadline?.hasError == true) {
-                val (refresh, prepend, append) = loadStateHeadline
-                when {
-                    refresh is LoadState.Error -> {
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                message = refresh.error.message ?: "Unknown error"
-                            )
-                        }
-                    }
-
-                    prepend is LoadState.Error -> {
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                message = prepend.error.message ?: "Unknown error"
-                            )
-                        }
-                    }
-
-                    append is LoadState.Error -> {
-                        scope.launch {
-                            snackBarHostState.showSnackbar(
-                                message = append.error.message ?: "Unknown error"
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     Scaffold(
         modifier = modifier,
         snackbarHost = {
-            SnackbarHost(snackBarHostState)
+            SnackbarHost(snackbarHostState)
         },
         topBar = {
             HomeTopBar(

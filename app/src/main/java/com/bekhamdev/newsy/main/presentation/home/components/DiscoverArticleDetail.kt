@@ -1,6 +1,6 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +39,12 @@ fun DiscoverArticleDetail(
         formatPublishedAtDate(article.publishedAt)
     }
 
+    val dateColor = if (isSystemInDarkTheme()) {
+        Color.LightGray
+    } else {
+        Color.DarkGray
+    }
+
     Column(
         modifier = modifier
             .padding(NewsyTheme.dimens.itemPadding)
@@ -68,7 +74,8 @@ fun DiscoverArticleDetail(
                 )
                 Text(
                     text = publishedAt,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = dateColor
                 )
             }
 

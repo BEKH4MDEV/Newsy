@@ -1,5 +1,6 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -50,6 +52,12 @@ fun HeadlineCard(
 
     val publishedAt = remember(article.publishedAt) {
         formatPublishedAtDate(article.publishedAt)
+    }
+
+    val dateColor = if (isSystemInDarkTheme()) {
+        Color.LightGray
+    } else {
+        Color.DarkGray
     }
 
     Card(
@@ -95,7 +103,8 @@ fun HeadlineCard(
                         )
                         Text(
                             text = publishedAt,
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            color = dateColor
                         )
                     }
 

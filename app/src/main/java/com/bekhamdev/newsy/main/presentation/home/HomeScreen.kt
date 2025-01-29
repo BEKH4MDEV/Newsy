@@ -8,9 +8,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.presentation.home.components.HomeTopBar
@@ -29,7 +37,7 @@ fun HomeScreen(
     onAction: (HomeAction) -> Unit,
     headlineArticles: LazyPagingItems<ArticleUi>,
     discoverArticles: LazyPagingItems<ArticleUi>,
-    snackbarHostState: SnackbarHostState
+    snackbarHostState: SnackbarHostState,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -46,47 +54,76 @@ fun HomeScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+
+        var isRefreshing by remember {
+            mutableStateOf(false)
+        }
+        val pullToRefreshState = rememberPullToRefreshState()
+        val headlineStateRefresh = headlineArticles.loadState.refresh
+        val discoverStateRefresh = discoverArticles.loadState.refresh
+
+        LaunchedEffect(
+            key1 = headlineStateRefresh,
+            key2 = discoverStateRefresh
+        ) {
+            if (headlineStateRefresh !is LoadState.Loading
+                && discoverStateRefresh !is LoadState.Loading) {
+                isRefreshing = false
+            }
+        }
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            state = pullToRefreshState,
+            onRefresh = {
+                isRefreshing = true
+                onAction(HomeAction.OnRefresh)
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
-            headlineItems(
-                headlineArticles = headlineArticles,
-                onViewMoreClick = onViewMoreClick,
-                onItemClick = {
-                    onAction(
-                        HomeAction.OnArticleClick(it)
-                    )
-                },
-                onFavouriteHeadlineChange = {
-                    onAction(
-                        HomeAction.OnHeadlineFavouriteChange(it)
-                    )
-                }
-            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+            ) {
+                headlineItems(
+                    headlineArticles = headlineArticles,
+                    onViewMoreClick = onViewMoreClick,
+                    onItemClick = {
+                        onAction(
+                            HomeAction.OnArticleClick(it)
+                        )
+                    },
+                    onFavouriteHeadlineChange = {
+                        onAction(
+                            HomeAction.OnHeadlineFavouriteChange(it)
+                        )
+                    }
+                )
 
-            discoverItems(
-                selectedDiscoverCategory = state.selectedDiscoverCategory,
-                categories = ArticleCategory.entries,
-                discoverArticles = discoverArticles,
-                onItemClick = {
-                    onAction(
-                        HomeAction.OnArticleClick(it)
-                    )
-                },
-                onCategoryChange = {
-                    onAction(
-                        HomeAction.OnCategoryChange(it)
-                    )
-                },
-                onFavouriteDiscoverChange = {
-                    onAction(
-                        HomeAction.OnDiscoverFavouriteChange(it)
-                    )
-                }
-            )
+                discoverItems(
+                    selectedDiscoverCategory = state.selectedDiscoverCategory,
+                    categories = ArticleCategory.entries,
+                    discoverArticles = discoverArticles,
+                    onItemClick = {
+                        onAction(
+                            HomeAction.OnArticleClick(it)
+                        )
+                    },
+                    onCategoryChange = {
+                        onAction(
+                            HomeAction.OnCategoryChange(it)
+                        )
+                    },
+                    onFavouriteDiscoverChange = {
+                        onAction(
+                            HomeAction.OnDiscoverFavouriteChange(it)
+                        )
+                    }
+                )
+            }
         }
     }
 }

@@ -9,4 +9,5 @@ sealed interface HomeAction {
     data class OnPreferencePanelToggle(val isOpen: Boolean): HomeAction
     data class OnHeadlineFavouriteChange(val article: ArticleUi): HomeAction
     data class OnDiscoverFavouriteChange(val article: ArticleUi): HomeAction
+    data object OnRefresh: HomeAction
 }

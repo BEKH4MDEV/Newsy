@@ -96,6 +96,9 @@ class HomeViewModel @Inject constructor(
                 )
                 updateFavouriteDiscover(articleUpdated)
             }
+            is HomeAction.OnRefresh -> {
+                loadAllArticles()
+            }
         }
     }
 

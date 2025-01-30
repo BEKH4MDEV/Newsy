@@ -13,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bekhamdev.newsy.core.presentation.utils.HandlePagingErrors
 import com.bekhamdev.newsy.main.presentation.detail.DetailScreen
+import com.bekhamdev.newsy.main.presentation.headline.HeadlineScreen
 import com.bekhamdev.newsy.main.presentation.home.HomeAction
 import com.bekhamdev.newsy.main.presentation.home.HomeScreen
 import com.bekhamdev.newsy.main.presentation.home.HomeViewModel
@@ -28,15 +29,23 @@ fun NavController(
     val discoverArticles = state.discoverArticles.collectAsLazyPagingItems()
     val loadStateHeadline = headlineArticles.loadState.mediator
     val loadStateDiscover = discoverArticles.loadState.mediator
-    val snackBarHostState = remember {
+    val snackBarHomeHostState = remember {
         SnackbarHostState()
     }
+    val snackBarHeadlineHostState = remember {
+        SnackbarHostState()
+    }
+
     HandlePagingErrors(
         loadStates = listOf(
             loadStateDiscover,
             loadStateHeadline
         ),
-        snackbarHostState = snackBarHostState
+        snackbarHostStates = listOf(
+            snackBarHomeHostState,
+            snackBarHeadlineHostState
+        ),
+        indexOfUnified = 0
     )
 
     NavHost(
@@ -65,13 +74,13 @@ fun NavController(
                 },
                 headlineArticles = headlineArticles,
                 discoverArticles = discoverArticles,
-                snackbarHostState = snackBarHostState
+                snackbarHostState = snackBarHomeHostState
             )
         }
 
         composable<Route.Detail> {
             DetailScreen(
-                article = state.articleSelected,
+                articleInformation = state.articleSelected,
                 onAction = {
                     viewModel.onAction(it)
                 },
@@ -86,7 +95,25 @@ fun NavController(
         }
 
         composable<Route.Headline> {
-
+            HeadlineScreen(
+                articles = headlineArticles,
+                snackbarHostState = snackBarHeadlineHostState,
+                onSearchClick = {
+                    navController.navigate(Route.Search)
+                },
+                goBack = {
+                    navController.popBackStack()
+                },
+                onAction = {
+                    viewModel.onAction(it)
+                    when (it) {
+                        is HomeAction.OnArticleClick -> {
+                            navController.navigate(Route.Detail)
+                        }
+                        else -> {}
+                    }
+                },
+            )
         }
 
         composable<Route.Search> {

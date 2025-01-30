@@ -1,4 +1,4 @@
-package com.bekhamdev.newsy.main.presentation.home.components
+package com.bekhamdev.newsy.main.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,11 +19,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bekhamdev.newsy.R
+import com.bekhamdev.newsy.main.presentation.home.components.DiscoverArticleDetail
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
 @Composable
-fun DiscoverArticleItem(
+fun ArticleItem(
     modifier: Modifier = Modifier,
     article: ArticleUi,
     onClick: (ArticleUi) -> Unit,
@@ -72,7 +73,7 @@ fun DiscoverArticleItem(
 @Composable
 fun DiscoverArticleItemPreview() {
     NewsyTheme {
-        DiscoverArticleItem(
+        ArticleItem(
             article = ArticleUi(
                 author = "Jane Doe",
                 content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",

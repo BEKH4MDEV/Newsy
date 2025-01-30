@@ -1,4 +1,4 @@
-package com.bekhamdev.newsy.main.presentation.detail.components
+package com.bekhamdev.newsy.main.presentation.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -14,20 +14,15 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailTopBar(
+fun TopBar(
     modifier: Modifier = Modifier,
-    title: String,
+    title: @Composable () -> Unit,
     onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
-        title = {
-            Text(
-                text = title,
-                maxLines = 1
-            )
-        },
+        title = title,
         navigationIcon = {
             IconButton(
                 onClick = goBack

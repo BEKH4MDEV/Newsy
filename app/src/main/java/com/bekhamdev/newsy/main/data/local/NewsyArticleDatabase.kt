@@ -19,7 +19,7 @@ import com.bekhamdev.newsy.main.data.local.entity.HeadlineKeyEntity
         DiscoverKeyEntity::class
     ],
     exportSchema = false,
-    version = 9
+    version = 10
 )
 abstract class NewsyArticleDatabase : RoomDatabase() {
     abstract fun headlineDao(): HeadlineDao

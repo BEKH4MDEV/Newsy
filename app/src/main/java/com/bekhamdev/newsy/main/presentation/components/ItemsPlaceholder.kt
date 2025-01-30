@@ -1,4 +1,4 @@
-package com.bekhamdev.newsy.main.presentation.home.components
+package com.bekhamdev.newsy.main.presentation.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -22,7 +22,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 @Composable
-fun DiscoverItemsPlaceholder(
+fun ItemsPlaceholder(
     modifier: Modifier = Modifier,
 ) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp

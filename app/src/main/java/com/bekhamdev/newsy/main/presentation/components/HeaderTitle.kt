@@ -1,4 +1,4 @@
-package com.bekhamdev.newsy.main.presentation.home.components
+package com.bekhamdev.newsy.main.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -27,9 +27,6 @@ fun HeaderTitle(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                top = NewsyTheme.dimens.defaultPadding,
-            )
     ) {
         Text(
             text = title,

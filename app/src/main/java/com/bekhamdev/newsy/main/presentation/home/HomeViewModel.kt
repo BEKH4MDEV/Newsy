@@ -84,7 +84,9 @@ class HomeViewModel @Inject constructor(
                 )
                 _state.update {
                     it.copy(
-                        articleSelected = it.articleSelected?.copy(favourite = !it.articleSelected.favourite)
+                        articleSelected = it.articleSelected?.copy(
+                            article = articleUpdated
+                        )
                     )
                 }
                 updateFavouriteHeadline(articleUpdated)
@@ -94,10 +96,20 @@ class HomeViewModel @Inject constructor(
                 val articleUpdated = event.article.copy(
                     favourite = !event.article.favourite
                 )
+                _state.update {
+                    it.copy(
+                        articleSelected = it.articleSelected?.copy(
+                            article = articleUpdated
+                        )
+                    )
+                }
                 updateFavouriteDiscover(articleUpdated)
             }
-            is HomeAction.OnRefresh -> {
+            is HomeAction.OnRefreshAll -> {
                 loadAllArticles()
+            }
+            is HomeAction.OnRefreshHeadlineArticles -> {
+                refreshHeadlineArticles()
             }
         }
     }
@@ -131,6 +143,22 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             discoverUseCases.updateDiscoverArticleUseCase(
                 article = article.toArticle()
+            )
+        }
+    }
+
+    private fun refreshHeadlineArticles() {
+        _state.update {
+            it.copy(
+                headlineArticles = headlineUseCases
+                    .fetchHeadlineArticleUseCase(
+                        country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
+                        language = languageCodeList[0].code // TODO: SELECCIONAR LENGUAJE DINAMICAMENTE
+                    ).map { articles ->
+                        articles.map { article ->
+                            article.toArticleUi()
+                        }
+                    }.cachedIn(viewModelScope)
             )
         }
     }

@@ -4,7 +4,9 @@ import com.bekhamdev.newsy.main.data.local.entity.DiscoverEntity
 import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
 import com.bekhamdev.newsy.main.data.remote.dto.ArticleDto
 
-fun ArticleDto.toHeadlineEntity(): HeadlineEntity {
+fun ArticleDto.toHeadlineEntity(
+    category: String?,
+): HeadlineEntity {
     return HeadlineEntity(
         author = author,
         content = content,
@@ -14,6 +16,7 @@ fun ArticleDto.toHeadlineEntity(): HeadlineEntity {
         title = title,
         url = url,
         urlToImage = urlToImage,
+        category = category
     )
 }
 

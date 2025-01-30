@@ -33,21 +33,24 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bekhamdev.newsy.R
+import com.bekhamdev.newsy.core.presentation.utils.ArticleType
 import com.bekhamdev.newsy.core.presentation.utils.formatPublishedAtDate
-import com.bekhamdev.newsy.main.presentation.detail.components.DetailTopBar
+import com.bekhamdev.newsy.main.presentation.components.TopBar
 import com.bekhamdev.newsy.main.presentation.detail.components.InformationDetail
 import com.bekhamdev.newsy.main.presentation.home.HomeAction
+import com.bekhamdev.newsy.main.presentation.model.ArticleInformation
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
-    article: ArticleUi?,
+    articleInformation: ArticleInformation?,
     onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {},
     onAction: (HomeAction) -> Unit = {}
 ) {
+    val article = articleInformation?.article
     if (article == null) {
         Box(
             modifier = Modifier
@@ -78,8 +81,13 @@ fun DetailScreen(
             modifier = modifier
                 .fillMaxSize(),
             topBar = {
-                DetailTopBar(
-                    title = article.sourceName,
+                TopBar(
+                    title = {
+                        Text(
+                            text = article.sourceName,
+                            maxLines = 1
+                        )
+                    },
                     onSearchClick = onSearchClick,
                     goBack = goBack
                 )
@@ -118,7 +126,11 @@ fun DetailScreen(
                     IconButton(
                         onClick = {
                             onAction(
-                                HomeAction.OnHeadlineFavouriteChange(article)
+                                if (articleInformation.type == ArticleType.HEADLINE) {
+                                    HomeAction.OnHeadlineFavouriteChange(article)
+                                } else {
+                                    HomeAction.OnDiscoverFavouriteChange(article)
+                                }
                             )
                         }
                     ) {
@@ -181,7 +193,10 @@ fun DetailScreenPreview() {
 
     NewsyTheme {
         DetailScreen(
-            article = article
+            articleInformation = ArticleInformation(
+                article = article,
+                type = ArticleType.DISCOVER
+            )
         )
     }
 }

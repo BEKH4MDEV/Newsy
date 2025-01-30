@@ -58,9 +58,10 @@ class HeadlineRemoteMediator(
         }
 
         return try {
+            val category = SharedValues.HEADLINE_CATEGORY?.category
             val response = api.getArticles(
                 pageSize = state.config.pageSize,
-                category = SharedValues.HEADLINE_CATEGORY?.category,
+                category = category,
                 page = page,
                 country = country,
                 language = language
@@ -75,7 +76,9 @@ class HeadlineRemoteMediator(
                         headlineKeyDao().clearRemoteKeys()
                     }
                     val articles = headlineArticles.map {
-                        it.toHeadlineEntity()
+                        it.toHeadlineEntity(
+                            category = category
+                        )
                     }
                     val keys = articles.map { article ->
                         HeadlineKeyEntity(

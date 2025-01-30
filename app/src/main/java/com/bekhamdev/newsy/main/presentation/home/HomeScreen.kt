@@ -21,9 +21,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
+import com.bekhamdev.newsy.core.presentation.utils.ArticleType
 import com.bekhamdev.newsy.main.presentation.home.components.HomeTopBar
 import com.bekhamdev.newsy.main.presentation.home.components.discoverItems
 import com.bekhamdev.newsy.main.presentation.home.components.headlineItems
+import com.bekhamdev.newsy.main.presentation.model.ArticleInformation
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,7 +79,7 @@ fun HomeScreen(
             state = pullToRefreshState,
             onRefresh = {
                 isRefreshing = true
-                onAction(HomeAction.OnRefresh)
+                onAction(HomeAction.OnRefreshAll)
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -93,7 +95,12 @@ fun HomeScreen(
                     onViewMoreClick = onViewMoreClick,
                     onItemClick = {
                         onAction(
-                            HomeAction.OnArticleClick(it)
+                            HomeAction.OnArticleClick(
+                                ArticleInformation(
+                                    article = it,
+                                    type = ArticleType.HEADLINE
+                                )
+                            )
                         )
                     },
                     onFavouriteHeadlineChange = {
@@ -109,7 +116,12 @@ fun HomeScreen(
                     discoverArticles = discoverArticles,
                     onItemClick = {
                         onAction(
-                            HomeAction.OnArticleClick(it)
+                            HomeAction.OnArticleClick(
+                                ArticleInformation(
+                                    article = it,
+                                    type = ArticleType.DISCOVER
+                                )
+                            )
                         )
                     },
                     onCategoryChange = {

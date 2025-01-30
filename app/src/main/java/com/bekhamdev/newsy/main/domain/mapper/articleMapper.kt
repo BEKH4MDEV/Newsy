@@ -45,6 +45,7 @@ fun Article.toHeadlineEntity(): HeadlineEntity {
         title = title,
         url = url,
         urlToImage = urlToImage,
-        favourite = favourite
+        favourite = favourite,
+        category = category,
     )
 }

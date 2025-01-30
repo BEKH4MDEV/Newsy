@@ -27,6 +27,7 @@ data class HeadlineEntity(
     val urlToImage: String?,
 
     val favourite: Boolean = false,
+    val category: String?,
 
     @ColumnInfo(name = "created_at")
     val createdAt: Long = System.currentTimeMillis()

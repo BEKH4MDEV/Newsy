@@ -16,10 +16,11 @@ import kotlinx.coroutines.flow.receiveAsFlow
 @Composable
 fun HandlePagingErrors(
     loadStates: List<LoadStates?>,
-    snackbarHostState: SnackbarHostState
+    snackbarHostStates: List<SnackbarHostState>,
+    indexOfUnified: Int? = null
 ) {
     val channel = remember {
-        Channel<String>(Channel.CONFLATED)
+        Channel<ErrorInfo>(Channel.CONFLATED)
     }
 
     var lastError by remember {
@@ -34,7 +35,7 @@ fun HandlePagingErrors(
     }
 
     LaunchedEffect(loadStates) {
-        loadStates.forEach {
+        loadStates.forEachIndexed { index, it ->
             it?.let {
                 val (refresh, prepend, append) = it
                 when {
@@ -42,7 +43,10 @@ fun HandlePagingErrors(
                         val error = refresh.error.message ?: "Unknown Error"
                         if (lastError != error) {
                             channel.send(
-                                error
+                                ErrorInfo(
+                                    message = error,
+                                    index = index
+                                )
                             )
                             lastError = error
                         }
@@ -52,7 +56,10 @@ fun HandlePagingErrors(
                         val error = prepend.error.message ?: "Unknown Error"
                         if (lastError != error) {
                             channel.send(
-                                error
+                                ErrorInfo(
+                                    message = error,
+                                    index = index
+                                )
                             )
                             lastError = error
                         }
@@ -62,7 +69,10 @@ fun HandlePagingErrors(
                         val error = append.error.message ?: "Unknown Error"
                         if (lastError != error) {
                             channel.send(
-                                error
+                                ErrorInfo(
+                                    message = error,
+                                    index = index
+                                )
                             )
                             lastError = error
                         }
@@ -75,6 +85,14 @@ fun HandlePagingErrors(
     ObserveAsEvents(
         events = channel.receiveAsFlow()
     ) {
-        snackbarHostState.showSnackbar(it)
+        snackbarHostStates[it.index].showSnackbar(it.message)
+        if (indexOfUnified != null && indexOfUnified != it.index) {
+            snackbarHostStates[indexOfUnified].showSnackbar(it.message)
+        }
     }
 }
+
+private data class ErrorInfo (
+    val message: String,
+    val index: Int
+)

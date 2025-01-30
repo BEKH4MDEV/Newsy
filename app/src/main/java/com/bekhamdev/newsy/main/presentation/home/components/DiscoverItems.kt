@@ -15,6 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
+import com.bekhamdev.newsy.main.presentation.components.ArticleItem
+import com.bekhamdev.newsy.main.presentation.components.HeaderTitle
+import com.bekhamdev.newsy.main.presentation.components.ItemsPlaceholder
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
@@ -52,12 +55,12 @@ fun LazyListScope.discoverItems(
         when {
             loadStateMediator is LoadState.Loading
                     && discoverArticles.itemCount == 0 -> {
-                DiscoverItemsPlaceholder()
+                ItemsPlaceholder()
             }
 
             loadStateMediator is LoadState.Error
                     && discoverArticles.itemCount == 0 -> {
-                DiscoverItemsPlaceholder()
+                ItemsPlaceholder()
             }
         }
     }
@@ -65,7 +68,7 @@ fun LazyListScope.discoverItems(
     items(discoverArticles.itemCount) { index ->
         val article = discoverArticles[index]
         article?.let {
-            DiscoverArticleItem(
+            ArticleItem(
                 article = it,
                 onClick = onItemClick,
                 onFavouriteChange = onFavouriteDiscoverChange,
@@ -76,7 +79,7 @@ fun LazyListScope.discoverItems(
     }
 
     item {
-        if (isLoading) {
+        if (isLoading && discoverArticles.itemCount > 0) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -87,7 +90,7 @@ fun LazyListScope.discoverItems(
             ) {
                 CircularProgressIndicator(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(25.dp)
                 )
             }
         }

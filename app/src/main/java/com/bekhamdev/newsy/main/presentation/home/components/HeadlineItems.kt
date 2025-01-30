@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.paging.compose.LazyPagingItems
+import com.bekhamdev.newsy.main.presentation.components.HeaderTitle
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
@@ -29,7 +30,11 @@ fun LazyListScope.headlineItems(
     item {
         HeaderTitle(
             title = "Hot News",
-            icon = Icons.Default.LocalFireDepartment
+            icon = Icons.Default.LocalFireDepartment,
+            modifier = Modifier
+                .padding(
+                    top = NewsyTheme.dimens.defaultPadding,
+                )
         )
         Spacer(
             modifier = Modifier.size(NewsyTheme.dimens.itemSpacing)

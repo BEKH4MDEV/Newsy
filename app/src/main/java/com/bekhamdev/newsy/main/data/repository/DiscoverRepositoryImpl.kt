@@ -17,6 +17,7 @@ import com.bekhamdev.newsy.main.domain.model.Article
 import com.bekhamdev.newsy.main.domain.repository.DiscoverRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class DiscoverRepositoryImpl @Inject constructor(
@@ -26,11 +27,8 @@ class DiscoverRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalPagingApi::class)
     override fun fetchDiscoverArticles(
         category: ArticleCategory,
-        language: String,
         country: String
     ): Flow<PagingData<Article>> {
-        val categoryValue = category.category
-
         return Pager(
             PagingConfig(
                 pageSize = Constants.PAGE_SIZE_DISCOVER,
@@ -40,14 +38,14 @@ class DiscoverRepositoryImpl @Inject constructor(
             remoteMediator = DiscoverRemoteMediator(
                 api = api,
                 database = database,
-                category = categoryValue,
-                language = language,
-                country = country
+                category = category,
+                country = country,
+                isTimeOut = ::isTimeOut
             ),
             pagingSourceFactory = {
                 database
                     .discoverDao()
-                    .getDiscoverArticlesByCategory(categoryValue)
+                    .getDiscoverArticlesByCategory(category.category)
             }
         ).flow.map { articles ->
             articles.map {
@@ -76,5 +74,16 @@ class DiscoverRepositoryImpl @Inject constructor(
                 )
             }
         }
+    }
+
+    override suspend fun isTimeOut(category: ArticleCategory): Boolean {
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(
+            20, TimeUnit.MINUTES
+        )
+        val creationTime = database.discoverDao().getCreationTime(category.category)
+        val categories = database.discoverDao().getAllDiscoverArticlesCategory()
+        val isCurrentCategoryAvailable = categories.contains(category.category)
+        val timeOut = System.currentTimeMillis() - (creationTime ?: 0) > cacheTimeout
+        return (timeOut || !isCurrentCategoryAvailable)
     }
 }

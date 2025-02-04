@@ -8,10 +8,14 @@ import kotlinx.coroutines.flow.Flow
 interface DiscoverRepository {
     fun fetchDiscoverArticles(
         category: ArticleCategory,
-        language: String,
         country: String
     ): Flow<PagingData<Article>>
+
     suspend fun updateDiscoverArticle(
         article: Article
     )
+
+    suspend fun isTimeOut(
+        category: ArticleCategory
+    ): Boolean
 }

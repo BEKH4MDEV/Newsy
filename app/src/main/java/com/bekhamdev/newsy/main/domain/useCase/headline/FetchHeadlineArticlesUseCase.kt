@@ -10,11 +10,9 @@ class FetchHeadlineArticlesUseCase @Inject constructor(
     private val repository: HeadlineRepository
 ) {
     operator fun invoke(
-        language: String,
         country: String
     ): Flow<PagingData<Article>> {
         return repository.fetchHeadlineArticles(
-            language = language,
             country = country
         )
     }

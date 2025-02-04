@@ -43,7 +43,8 @@ fun HeadlineScreen(
     snackbarHostState: SnackbarHostState,
     onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {},
-    onAction: (HomeAction) -> Unit
+    onAction: (HomeAction) -> Unit,
+    refreshing: Boolean
 ) {
     Scaffold(
         modifier = modifier
@@ -74,7 +75,10 @@ fun HeadlineScreen(
 
         val stateRefresh = articles.loadState.refresh
 
-        LaunchedEffect(stateRefresh) {
+        LaunchedEffect(
+            stateRefresh,
+            refreshing
+        ) {
             if (stateRefresh !is LoadState.Loading) {
                 isRefreshing = false
             }

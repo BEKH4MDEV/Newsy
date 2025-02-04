@@ -5,34 +5,23 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
 import com.bekhamdev.newsy.main.data.local.entity.DiscoverEntity
 import com.bekhamdev.newsy.main.data.local.entity.DiscoverKeyEntity
 import com.bekhamdev.newsy.main.data.mappers.toDiscoverEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
 class DiscoverRemoteMediator(
     private val api: NewsApi,
     private val database: NewsyArticleDatabase,
-    private val category: String,
-    private val language: String,
-    private val country: String
+    private val category: ArticleCategory,
+    private val country: String,
+    private val isTimeOut: suspend (ArticleCategory) -> Boolean
 ): RemoteMediator<Int, DiscoverEntity>() {
     override suspend fun initialize(): InitializeAction {
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(
-            20, TimeUnit.MINUTES
-        )
-        val creationTime = database.discoverDao().getCreationTime(category)
-        val categories = database.discoverDao().getAllDiscoverArticlesCategory()
-        val isCurrentCategoryAvailable = categories.contains(category)
-        val timeOut = System.currentTimeMillis() - (creationTime ?: 0) > cacheTimeout
-        return if (
-            timeOut
-            ||
-            !isCurrentCategoryAvailable
-        ) {
+        return if (isTimeOut(category)) {
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
             InitializeAction.SKIP_INITIAL_REFRESH
@@ -62,22 +51,21 @@ class DiscoverRemoteMediator(
         return try {
             val response = api.getArticles(
                 pageSize = state.config.pageSize,
-                category = category,
+                category = category.category,
                 page = page,
-                country = country,
-                language = language
+                country = country
             )
             val discoverArticles = response.articles
             val endOfPaginationReached = discoverArticles.isEmpty()
             database.withTransaction {
                 database.apply {
                     if (loadType == LoadType.REFRESH) {
-                        discoverDao().removeAllDiscoverArticlesByCategory(category)
+                        discoverDao().removeAllDiscoverArticlesByCategory(category.category)
                         discoverKeyDao().clearRemoteKeys()
                     }
                     val articles = discoverArticles.map {
                         it.toDiscoverEntity(
-                            category = category
+                            category = category.category
                         )
                     }
                     val keys = articles.map { article ->

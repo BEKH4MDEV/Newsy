@@ -66,7 +66,8 @@ fun HomeScreen(
 
         LaunchedEffect(
             key1 = headlineStateRefresh,
-            key2 = discoverStateRefresh
+            key2 = discoverStateRefresh,
+            key3 = state.refreshing
         ) {
             if (headlineStateRefresh !is LoadState.Loading
                 && discoverStateRefresh !is LoadState.Loading) {

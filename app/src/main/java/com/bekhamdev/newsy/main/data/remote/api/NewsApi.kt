@@ -15,8 +15,8 @@ interface NewsApi {
         @Query("apiKey") apiKey: String = BuildConfig.API_KEY,
         @Query("country") country: String,
         @Query("category") category: String?,
-        @Query("language") language: String,
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int,
+        @Query("q") query: String? = null
     ): ArticlesResponseDto
 }

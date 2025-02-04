@@ -16,6 +16,7 @@ import com.bekhamdev.newsy.main.domain.model.Article
 import com.bekhamdev.newsy.main.domain.repository.HeadlineRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class HeadlineRepositoryImpl @Inject constructor(
@@ -24,7 +25,6 @@ class HeadlineRepositoryImpl @Inject constructor(
 ): HeadlineRepository {
     @OptIn(ExperimentalPagingApi::class)
     override fun fetchHeadlineArticles(
-        language: String,
         country: String
     ): Flow<PagingData<Article>> {
         return Pager(
@@ -36,8 +36,8 @@ class HeadlineRepositoryImpl @Inject constructor(
             remoteMediator = HeadlineRemoteMediator(
                 api = api,
                 database = database,
-                language = language,
-                country = country
+                country = country,
+                isTimeOut = ::isTimeOut
             ),
             pagingSourceFactory = {
                 database
@@ -69,5 +69,15 @@ class HeadlineRepositoryImpl @Inject constructor(
                 )
             }
         }
+    }
+
+    override suspend fun isTimeOut(): Boolean {
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(
+            20, TimeUnit.MINUTES
+        )
+
+        return (System.currentTimeMillis()
+                -
+                (database.headlineDao().getCreationTime() ?: 0)) >= cacheTimeout
     }
 }

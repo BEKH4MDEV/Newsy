@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.bekhamdev.newsy.core.presentation.utils.countryCodeList
-import com.bekhamdev.newsy.core.presentation.utils.languageCodeList
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
+import com.bekhamdev.newsy.core.presentation.utils.countryCodeList
 import com.bekhamdev.newsy.main.domain.mapper.toArticleUi
 import com.bekhamdev.newsy.main.domain.useCase.DiscoverUseCases
 import com.bekhamdev.newsy.main.domain.useCase.HeadlineUseCases
@@ -45,7 +44,6 @@ class HomeViewModel @Inject constructor(
                 headlineArticles = headlineUseCases
                     .fetchHeadlineArticleUseCase(
                         country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
-                        language = languageCodeList[0].code // TODO: SELECCIONAR LENGUAJE DINAMICAMENTE
                     ).map { articles ->
                         articles.map { article ->
                             article.toArticleUi()
@@ -55,13 +53,11 @@ class HomeViewModel @Inject constructor(
                     discoverUseCases.fetchDiscoverArticlesUseCase(
                         category = it.selectedDiscoverCategory,
                         country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
-                        language = languageCodeList[0].code // TODO: SELECCIONAR LENGUAJE DINAMICAMENTE
                     ).map { articles ->
                         articles.map { article ->
                             article.toArticleUi()
                         }
-                    }.cachedIn(viewModelScope),
-                isFirstLoad = false
+                    }.cachedIn(viewModelScope)
             )
         }
     }
@@ -106,10 +102,33 @@ class HomeViewModel @Inject constructor(
                 updateFavouriteDiscover(articleUpdated)
             }
             is HomeAction.OnRefreshAll -> {
-                loadAllArticles()
+                viewModelScope.launch {
+                    val isTimeOutDiscover = discoverUseCases.isTimeOutUseCase(_state.value.selectedDiscoverCategory)
+                    val isTimeOutHeadline = headlineUseCases.isTimeOutUseCase()
+                    if (isTimeOutDiscover || isTimeOutHeadline) {
+                        loadAllArticles()
+                    } else {
+                        _state.update {
+                            it.copy(
+                                refreshing = !it.refreshing
+                            )
+                        }
+                    }
+                }
             }
             is HomeAction.OnRefreshHeadlineArticles -> {
-                refreshHeadlineArticles()
+                viewModelScope.launch {
+                    val isTimeOutHeadline = headlineUseCases.isTimeOutUseCase()
+                    if (isTimeOutHeadline) {
+                        refreshHeadlineArticles()
+                    } else {
+                        _state.update {
+                            it.copy(
+                                refreshing = !it.refreshing
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -121,7 +140,6 @@ class HomeViewModel @Inject constructor(
                 discoverArticles = discoverUseCases.fetchDiscoverArticlesUseCase(
                     category = category,
                     country = countryCodeList[0].code,
-                    language = languageCodeList[0].code
                 ).map { articles ->
                     articles.map { article ->
                         article.toArticleUi()
@@ -153,7 +171,6 @@ class HomeViewModel @Inject constructor(
                 headlineArticles = headlineUseCases
                     .fetchHeadlineArticleUseCase(
                         country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
-                        language = languageCodeList[0].code // TODO: SELECCIONAR LENGUAJE DINAMICAMENTE
                     ).map { articles ->
                         articles.map { article ->
                             article.toArticleUi()

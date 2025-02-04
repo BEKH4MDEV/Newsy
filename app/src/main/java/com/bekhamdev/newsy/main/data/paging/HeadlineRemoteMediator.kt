@@ -11,29 +11,19 @@ import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
 import com.bekhamdev.newsy.main.data.local.entity.HeadlineKeyEntity
 import com.bekhamdev.newsy.main.data.mappers.toHeadlineEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
 class HeadlineRemoteMediator(
     private val api: NewsApi,
     private val database: NewsyArticleDatabase,
     private val country: String,
-    private val language: String
+    private val isTimeOut: suspend () -> Boolean
 ) : RemoteMediator<Int, HeadlineEntity>() {
     override suspend fun initialize(): InitializeAction {
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(
-            20, TimeUnit.MINUTES
-        )
-
-        return if (
-            System.currentTimeMillis()
-            -
-            (database.headlineDao().getCreationTime() ?: 0)
-            < cacheTimeout
-        ) {
-            InitializeAction.SKIP_INITIAL_REFRESH
-        } else {
+        return if (isTimeOut()) {
             InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
         }
     }
 
@@ -63,8 +53,7 @@ class HeadlineRemoteMediator(
                 pageSize = state.config.pageSize,
                 category = category,
                 page = page,
-                country = country,
-                language = language
+                country = country
             )
 
             val headlineArticles = response.articles

@@ -12,12 +12,10 @@ class FetchDiscoverArticlesUseCase @Inject constructor(
 ) {
     operator fun invoke(
         category: ArticleCategory,
-        language: String,
         country: String
     ): Flow<PagingData<Article>> {
         return repository.fetchDiscoverArticles(
             category = category,
-            language = language,
             country = country
         )
     }

@@ -6,11 +6,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface HeadlineRepository {
     fun fetchHeadlineArticles(
-        language: String,
         country: String
     ): Flow<PagingData<Article>>
 
     suspend fun updateHeadlineArticle(
         article: Article
     )
+
+    suspend fun isTimeOut(): Boolean
 }

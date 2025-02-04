@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
+import com.bekhamdev.newsy.core.domain.utils.SharedValues
 
 @Composable
 fun DiscoverShips(
@@ -23,15 +24,19 @@ fun DiscoverShips(
         horizontalArrangement = Arrangement.Center,
     ) {
         categories.forEachIndexed { index, category ->
-            DiscoverShip(
-                selected = category == selectCategory,
-                onClick = {
-                    onCategoryChange(category)
-                },
-                label = category.name,
-                first = index == 0,
-                last = index == categories.size - 1
-            )
+            if (category.category != (SharedValues.HEADLINE_CATEGORY?.category
+                    ?: ArticleCategory.GENERAL.category)
+            ) {
+                DiscoverShip(
+                    selected = category == selectCategory,
+                    onClick = {
+                        onCategoryChange(category)
+                    },
+                    label = category.name,
+                    first = index == 0,
+                    last = index == categories.size - 1
+                )
+            }
         }
     }
 }

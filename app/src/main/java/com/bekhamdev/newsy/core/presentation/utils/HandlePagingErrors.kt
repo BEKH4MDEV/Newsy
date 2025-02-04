@@ -6,12 +6,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 
 @Composable
 fun HandlePagingErrors(
@@ -19,13 +21,12 @@ fun HandlePagingErrors(
     snackbarHostStates: List<SnackbarHostState>,
     indexOfUnified: Int? = null
 ) {
-    val channel = remember {
-        Channel<ErrorInfo>(Channel.CONFLATED)
+
+    val errorInfo = remember {
+        Channel<ErrorInfo>()
     }
 
-    var lastError by remember {
-        mutableStateOf("")
-    }
+    var lastError by remember { mutableStateOf("") }
 
     LaunchedEffect(lastError) {
         if (lastError.isNotEmpty()) {
@@ -35,59 +36,41 @@ fun HandlePagingErrors(
     }
 
     LaunchedEffect(loadStates) {
-        loadStates.forEachIndexed { index, it ->
-            it?.let {
-                val (refresh, prepend, append) = it
-                when {
-                    refresh is LoadState.Error -> {
-                        val error = refresh.error.message ?: "Unknown Error"
-                        if (lastError != error) {
-                            channel.send(
-                                ErrorInfo(
-                                    message = error,
-                                    index = index
-                                )
-                            )
-                            lastError = error
-                        }
-                    }
-
-                    prepend is LoadState.Error -> {
-                        val error = prepend.error.message ?: "Unknown Error"
-                        if (lastError != error) {
-                            channel.send(
-                                ErrorInfo(
-                                    message = error,
-                                    index = index
-                                )
-                            )
-                            lastError = error
-                        }
-                    }
-
-                    append is LoadState.Error -> {
-                        val error = append.error.message ?: "Unknown Error"
-                        if (lastError != error) {
-                            channel.send(
-                                ErrorInfo(
-                                    message = error,
-                                    index = index
-                                )
-                            )
-                            lastError = error
-                        }
+        loadStates.forEachIndexed { index, loadState ->
+            loadState?.let { (refresh, prepend, append) ->
+                val errorMessage = when {
+                    refresh is LoadState.Error -> refresh.error.message ?: "Unknown Error"
+                    prepend is LoadState.Error -> prepend.error.message ?: "Unknown Error"
+                    append is LoadState.Error -> append.error.message ?: "Unknown Error"
+                    else -> null
+                }
+                errorMessage?.let { error ->
+                    if (lastError != error) {
+                        errorInfo.send(
+                            ErrorInfo(message = error, index = index)
+                        )
+                        lastError = error
                     }
                 }
             }
         }
     }
 
+    val scope = rememberCoroutineScope()
+
     ObserveAsEvents(
-        events = channel.receiveAsFlow()
+        events = errorInfo.receiveAsFlow()
     ) {
-        snackbarHostStates[it.index].showSnackbar(it.message)
+
+        scope.launch {
+            snackbarHostStates[it.index].currentSnackbarData?.dismiss()
+            snackbarHostStates[it.index].showSnackbar(it.message)
+        }
         if (indexOfUnified != null && indexOfUnified != it.index) {
-            snackbarHostStates[indexOfUnified].showSnackbar(it.message)
+            scope.launch {
+                snackbarHostStates[indexOfUnified].currentSnackbarData?.dismiss()
+                snackbarHostStates[indexOfUnified].showSnackbar(it.message)
+            }
         }
     }
 }

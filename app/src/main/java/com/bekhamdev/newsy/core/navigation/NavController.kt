@@ -38,14 +38,14 @@ fun NavController(
 
     HandlePagingErrors(
         loadStates = listOf(
-            loadStateDiscover,
-            loadStateHeadline
+            loadStateHeadline,
+            loadStateDiscover
         ),
         snackbarHostStates = listOf(
-            snackBarHomeHostState,
-            snackBarHeadlineHostState
+            snackBarHeadlineHostState,
+            snackBarHomeHostState
         ),
-        indexOfUnified = 0
+        indexOfUnified = 1
     )
 
     NavHost(

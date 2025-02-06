@@ -24,7 +24,6 @@ data class DiscoverEntity (
     @ColumnInfo(name = "url_to_image")
     val urlToImage: String?,
 
-    val favourite: Boolean = false,
     val category: String,
 
     @ColumnInfo(name = "created_at")

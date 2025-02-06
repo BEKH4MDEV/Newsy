@@ -17,6 +17,7 @@ import com.bekhamdev.newsy.main.presentation.headline.HeadlineScreen
 import com.bekhamdev.newsy.main.presentation.home.HomeAction
 import com.bekhamdev.newsy.main.presentation.home.HomeScreen
 import com.bekhamdev.newsy.main.presentation.home.HomeViewModel
+import com.bekhamdev.newsy.main.presentation.search.SearchScreen
 
 @Composable
 fun NavController(
@@ -80,7 +81,7 @@ fun NavController(
 
         composable<Route.Detail> {
             DetailScreen(
-                articleInformation = state.articleSelected,
+                article = state.articleSelected,
                 onAction = {
                     viewModel.onAction(it)
                 },
@@ -91,7 +92,6 @@ fun NavController(
                     navController.popBackStack()
                 }
             )
-
         }
 
         composable<Route.Headline> {
@@ -112,13 +112,12 @@ fun NavController(
                         }
                         else -> {}
                     }
-                },
-                refreshing = state.refreshing
+                }
             )
         }
 
         composable<Route.Search> {
-
+            SearchScreen()
         }
     }
 

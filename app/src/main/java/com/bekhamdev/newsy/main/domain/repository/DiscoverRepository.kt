@@ -11,10 +11,6 @@ interface DiscoverRepository {
         country: String
     ): Flow<PagingData<Article>>
 
-    suspend fun updateDiscoverArticle(
-        article: Article
-    )
-
     suspend fun isTimeOut(
         category: ArticleCategory
     ): Boolean

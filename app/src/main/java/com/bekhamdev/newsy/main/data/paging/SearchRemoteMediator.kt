@@ -5,23 +5,30 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
-import com.bekhamdev.newsy.main.data.local.entity.DiscoverEntity
-import com.bekhamdev.newsy.main.data.local.entity.DiscoverKeyEntity
-import com.bekhamdev.newsy.main.data.mappers.toDiscoverEntity
+import com.bekhamdev.newsy.main.data.local.entity.SearchEntity
+import com.bekhamdev.newsy.main.data.local.entity.SearchKeyEntity
+import com.bekhamdev.newsy.main.data.mappers.toSearchEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
-class DiscoverRemoteMediator(
+class SearchRemoteMediator(
     private val api: NewsApi,
     private val database: NewsyArticleDatabase,
-    private val category: ArticleCategory,
-    private val country: String,
-    private val isTimeOut: suspend (ArticleCategory) -> Boolean
-): RemoteMediator<Int, DiscoverEntity>() {
+    private val language: String,
+    private val query: String
+) : RemoteMediator<Int, SearchEntity>() {
+
     override suspend fun initialize(): InitializeAction {
-        return if (isTimeOut(category)) {
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(
+            20, TimeUnit.MINUTES
+        )
+
+        return if ((System.currentTimeMillis()
+                    -
+                    (database.searchDao().getCreationTime() ?: 0)) >= cacheTimeout
+        ) {
             InitializeAction.LAUNCH_INITIAL_REFRESH
         } else {
             InitializeAction.SKIP_INITIAL_REFRESH
@@ -30,9 +37,8 @@ class DiscoverRemoteMediator(
 
     override suspend fun load(
         loadType: LoadType,
-        state: PagingState<Int, DiscoverEntity>
+        state: PagingState<Int, SearchEntity>
     ): MediatorResult {
-
         val page = when (loadType) {
             LoadType.REFRESH -> {
                 val remoteKey = getClosestRemoteKey(state)
@@ -49,58 +55,60 @@ class DiscoverRemoteMediator(
         }
 
         return try {
-            val response = api.getArticles(
+            val response = api.getEverythingArticles(
                 pageSize = state.config.pageSize,
-                category = category.category,
                 page = page,
-                country = country
+                language = language,
+                query = query,
             )
-            val discoverArticles = response.articles
-            val endOfPaginationReached = discoverArticles.isEmpty()
+
+            val searchArticles = response.articles
+            val endOfPaginationReached = searchArticles.isEmpty()
+
             database.withTransaction {
                 database.apply {
                     if (loadType == LoadType.REFRESH) {
-                        discoverDao().removeAllDiscoverArticlesByCategory(category.category)
-                        discoverKeyDao().clearRemoteKeys()
+                        searchDao().removeAllSearchArticles()
+                        searchKeyDao().clearRemoteKeys()
                     }
 
-                    val articles = discoverArticles.map {
-                        it.toDiscoverEntity(
-                            category = category.category
-                        )
+                    val articles = searchArticles.map {
+                        it.toSearchEntity()
                     }
 
                     val keys = articles.map { article ->
-                        DiscoverKeyEntity(
+                        SearchKeyEntity(
                             url = article.url,
                             prevKey = if (page == 1) null else page - 1,
                             nextKey = if (endOfPaginationReached) null else page + 1
                         )
                     }
-                    discoverDao().insertDiscoverArticles(
+
+                    searchDao().insertSearchArticles(
                         articles
                     )
-                    discoverKeyDao().insertAll(keys)
+
+                    searchKeyDao().insertAll(keys)
+
                 }
             }
-
             MediatorResult.Success(endOfPaginationReached)
         } catch (error: Exception) {
             MediatorResult.Error(error)
         }
     }
 
-    private suspend fun getClosestRemoteKey(state: PagingState<Int, DiscoverEntity>): DiscoverKeyEntity? {
+    private suspend fun getClosestRemoteKey(state: PagingState<Int, SearchEntity>): SearchKeyEntity? {
         val anchorPosition = state.anchorPosition ?: return null
         val closestItem = state.closestItemToPosition(anchorPosition) ?: return null
-        return database.discoverKeyDao().getRemoteKeyByUrl(closestItem.url)
+        return database.searchKeyDao().getRemoteKeyByUrl(closestItem.url)
     }
 
-    private suspend fun getFirstRemoteKey(): DiscoverKeyEntity? {
-        return database.discoverKeyDao().getFirstRemoteKey()
+    private suspend fun getFirstRemoteKey(): SearchKeyEntity? {
+        return database.searchKeyDao().getFirstRemoteKey()
     }
 
-    private suspend fun getLastRemoteKey(): DiscoverKeyEntity? {
-        return database.discoverKeyDao().getLastRemoteKey()
+    private suspend fun getLastRemoteKey(): SearchKeyEntity? {
+        return database.searchKeyDao().getLastRemoteKey()
     }
 }

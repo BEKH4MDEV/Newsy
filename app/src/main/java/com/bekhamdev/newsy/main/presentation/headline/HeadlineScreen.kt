@@ -25,13 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.bekhamdev.newsy.core.presentation.utils.ArticleType
+import com.bekhamdev.newsy.main.presentation.components.ArticleItem
 import com.bekhamdev.newsy.main.presentation.components.HeaderTitle
 import com.bekhamdev.newsy.main.presentation.components.ItemsPlaceholder
 import com.bekhamdev.newsy.main.presentation.components.TopBar
-import com.bekhamdev.newsy.main.presentation.components.ArticleItem
 import com.bekhamdev.newsy.main.presentation.home.HomeAction
-import com.bekhamdev.newsy.main.presentation.model.ArticleInformation
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
@@ -44,7 +42,6 @@ fun HeadlineScreen(
     onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {},
     onAction: (HomeAction) -> Unit,
-    refreshing: Boolean
 ) {
     Scaffold(
         modifier = modifier
@@ -76,8 +73,7 @@ fun HeadlineScreen(
         val stateRefresh = articles.loadState.refresh
 
         LaunchedEffect(
-            stateRefresh,
-            refreshing
+            stateRefresh
         ) {
             if (stateRefresh !is LoadState.Loading) {
                 isRefreshing = false
@@ -92,9 +88,7 @@ fun HeadlineScreen(
             state = pullToRefreshState,
             onRefresh = {
                 isRefreshing = true
-                onAction(
-                    HomeAction.OnRefreshHeadlineArticles
-                )
+                articles.refresh()
             },
         ) {
             LazyColumn(
@@ -120,16 +114,13 @@ fun HeadlineScreen(
                             onClick = { item ->
                                 onAction(
                                     HomeAction.OnArticleClick(
-                                        ArticleInformation(
-                                            article = item,
-                                            type = ArticleType.HEADLINE
-                                        )
+                                        item
                                     )
                                 )
                             },
                             onFavouriteChange = { item ->
                                 onAction(
-                                    HomeAction.OnHeadlineFavouriteChange(item)
+                                    HomeAction.OnFavouriteChange(item)
                                 )
                             },
                             modifier = Modifier

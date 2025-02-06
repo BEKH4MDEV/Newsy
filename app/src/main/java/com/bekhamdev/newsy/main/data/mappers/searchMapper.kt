@@ -1,9 +1,9 @@
-package com.bekhamdev.newsy.main.presentation.mappers
+package com.bekhamdev.newsy.main.data.mappers
 
+import com.bekhamdev.newsy.main.data.local.entity.SearchEntity
 import com.bekhamdev.newsy.main.domain.model.Article
-import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 
-fun ArticleUi.toArticle(): Article {
+fun SearchEntity.toArticle(): Article {
     return Article(
         author = author,
         content = content,
@@ -13,6 +13,6 @@ fun ArticleUi.toArticle(): Article {
         title = title,
         url = url,
         urlToImage = urlToImage,
-        category = category
+        category = null,
     )
 }

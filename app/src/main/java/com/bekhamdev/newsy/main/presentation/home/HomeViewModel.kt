@@ -4,17 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
-import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.core.presentation.utils.countryCodeList
 import com.bekhamdev.newsy.main.domain.mapper.toArticleUi
 import com.bekhamdev.newsy.main.domain.useCase.DiscoverUseCases
+import com.bekhamdev.newsy.main.domain.useCase.FavoriteUseCases
 import com.bekhamdev.newsy.main.domain.useCase.HeadlineUseCases
 import com.bekhamdev.newsy.main.presentation.mappers.toArticle
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,9 +26,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val headlineUseCases: HeadlineUseCases,
-    private val discoverUseCases: DiscoverUseCases
-): ViewModel() {
-
+    private val discoverUseCases: DiscoverUseCases,
+    private val favoriteUseCases: FavoriteUseCases
+) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = _state
         .onStart {
@@ -38,146 +40,82 @@ class HomeViewModel @Inject constructor(
             initialValue = _state.value
         )
 
+    private val favoritesFlow = favoriteUseCases.getAllFavoriteArticlesUrlUseCase()
+
+    private val selectedCategoryFlow = MutableStateFlow(_state.value.selectedDiscoverCategory)
+
+    private val headlinePagingFlow = headlineUseCases
+        .fetchHeadlineArticleUseCase(country = countryCodeList[0].code)
+        .cachedIn(viewModelScope)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val discoverPagingFlow = selectedCategoryFlow
+        .flatMapLatest { category ->
+            discoverUseCases.fetchDiscoverArticlesUseCase(
+                category = category,
+                country = countryCodeList[0].code
+            )
+        }
+        .cachedIn(viewModelScope)
+
+    private val headlineArticlesFlow = headlinePagingFlow.combine(favoritesFlow) { pagingData, favorites ->
+        pagingData.map { entity ->
+            entity.toArticleUi(favorites.contains(entity.url))
+        }
+    }.cachedIn(viewModelScope)
+
+    private val discoverArticlesFlow = discoverPagingFlow.combine(favoritesFlow) { pagingData, favorites ->
+        pagingData.map { entity ->
+            entity.toArticleUi(favorites.contains(entity.url))
+        }
+    }.cachedIn(viewModelScope)
+
     private fun loadAllArticles() {
         _state.update {
             it.copy(
-                headlineArticles = headlineUseCases
-                    .fetchHeadlineArticleUseCase(
-                        country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
-                    ).map { articles ->
-                        articles.map { article ->
-                            article.toArticleUi()
-                        }
-                    }.cachedIn(viewModelScope),
-                discoverArticles =
-                    discoverUseCases.fetchDiscoverArticlesUseCase(
-                        category = it.selectedDiscoverCategory,
-                        country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
-                    ).map { articles ->
-                        articles.map { article ->
-                            article.toArticleUi()
-                        }
-                    }.cachedIn(viewModelScope)
+                headlineArticles = headlineArticlesFlow,
+                discoverArticles = discoverArticlesFlow
             )
         }
     }
 
     fun onAction(event: HomeAction) {
-        when(event) {
+        when (event) {
             is HomeAction.OnArticleClick -> {
                 _state.update {
-                    it.copy(
-                        articleSelected = event.article
-                    )
+                    it.copy(articleSelected = event.article)
                 }
             }
             is HomeAction.OnCategoryChange -> {
-               updateCategory(event.category)
-            }
-            is HomeAction.OnHeadlineFavouriteChange -> {
-                val articleUpdated = event.article.copy(
-                    favourite = !event.article.favourite
-                )
                 _state.update {
-                    it.copy(
-                        articleSelected = it.articleSelected?.copy(
-                            article = articleUpdated
-                        )
-                    )
+                    it.copy(selectedDiscoverCategory = event.category)
                 }
-                updateFavouriteHeadline(articleUpdated)
+                selectedCategoryFlow.value = event.category
             }
-            is HomeAction.OnPreferencePanelToggle -> TODO()
-            is HomeAction.OnDiscoverFavouriteChange -> {
-                val articleUpdated = event.article.copy(
-                    favourite = !event.article.favourite
-                )
+            is HomeAction.OnFavouriteChange -> {
+                val updated = event.article.copy(favourite = !event.article.favourite)
                 _state.update {
-                    it.copy(
-                        articleSelected = it.articleSelected?.copy(
-                            article = articleUpdated
-                        )
-                    )
+                    it.copy(articleSelected = it.articleSelected?.copy(favourite = updated.favourite))
                 }
-                updateFavouriteDiscover(articleUpdated)
-            }
-            is HomeAction.OnRefreshAll -> {
-                viewModelScope.launch {
-                    val isTimeOutDiscover = discoverUseCases.isTimeOutUseCase(_state.value.selectedDiscoverCategory)
-                    val isTimeOutHeadline = headlineUseCases.isTimeOutUseCase()
-                    if (isTimeOutDiscover || isTimeOutHeadline) {
-                        loadAllArticles()
-                    } else {
-                        _state.update {
-                            it.copy(
-                                refreshing = !it.refreshing
-                            )
-                        }
-                    }
+                if (updated.favourite) {
+                    insertFavourite(updated)
+                } else {
+                    deleteFavorite(updated)
                 }
             }
-            is HomeAction.OnRefreshHeadlineArticles -> {
-                viewModelScope.launch {
-                    val isTimeOutHeadline = headlineUseCases.isTimeOutUseCase()
-                    if (isTimeOutHeadline) {
-                        refreshHeadlineArticles()
-                    } else {
-                        _state.update {
-                            it.copy(
-                                refreshing = !it.refreshing
-                            )
-                        }
-                    }
-                }
-            }
+            is HomeAction.OnPreferencePanelToggle -> {}
         }
     }
 
-    private fun updateCategory(category: ArticleCategory) {
-        _state.update {
-            it.copy(
-                selectedDiscoverCategory = category,
-                discoverArticles = discoverUseCases.fetchDiscoverArticlesUseCase(
-                    category = category,
-                    country = countryCodeList[0].code,
-                ).map { articles ->
-                    articles.map { article ->
-                        article.toArticleUi()
-                    }
-                }.cachedIn(viewModelScope)
-            )
-        }
-    }
-
-    private fun updateFavouriteHeadline(article: ArticleUi) {
+    private fun insertFavourite(article: ArticleUi) {
         viewModelScope.launch {
-            headlineUseCases.updateHeadlineArticleUseCase(
-                article = article.toArticle()
-            )
+            favoriteUseCases.insertFavoriteArticleUseCase(article.toArticle())
         }
     }
 
-    private fun updateFavouriteDiscover(article: ArticleUi) {
+    private fun deleteFavorite(article: ArticleUi) {
         viewModelScope.launch {
-            discoverUseCases.updateDiscoverArticleUseCase(
-                article = article.toArticle()
-            )
+            favoriteUseCases.deleteFavoriteArticleUseCase(article.toArticle())
         }
     }
-
-    private fun refreshHeadlineArticles() {
-        _state.update {
-            it.copy(
-                headlineArticles = headlineUseCases
-                    .fetchHeadlineArticleUseCase(
-                        country = countryCodeList[0].code, // TODO: SELECCIONAR PAIS DINAMICAMENTE
-                    ).map { articles ->
-                        articles.map { article ->
-                            article.toArticleUi()
-                        }
-                    }.cachedIn(viewModelScope)
-            )
-        }
-    }
-
 }

@@ -4,10 +4,9 @@ import androidx.paging.PagingData
 import com.bekhamdev.newsy.main.domain.model.Article
 import kotlinx.coroutines.flow.Flow
 
-interface HeadlineRepository {
-    fun fetchHeadlineArticles(
-        country: String
+interface SearchRepository {
+    fun fetchSearchArticles(
+        language: String,
+        query: String
     ): Flow<PagingData<Article>>
-
-    suspend fun isTimeOut(): Boolean
 }

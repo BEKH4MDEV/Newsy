@@ -5,14 +5,12 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import androidx.room.withTransaction
 import com.bekhamdev.newsy.core.data.utils.Constants
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
 import com.bekhamdev.newsy.main.data.mappers.toArticle
 import com.bekhamdev.newsy.main.data.paging.DiscoverRemoteMediator
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
-import com.bekhamdev.newsy.main.domain.mapper.toDiscoverEntity
 import com.bekhamdev.newsy.main.domain.model.Article
 import com.bekhamdev.newsy.main.domain.repository.DiscoverRepository
 import kotlinx.coroutines.flow.Flow
@@ -23,13 +21,13 @@ import javax.inject.Inject
 class DiscoverRepositoryImpl @Inject constructor(
     private val api: NewsApi,
     private val database: NewsyArticleDatabase
-): DiscoverRepository {
+) : DiscoverRepository {
     @OptIn(ExperimentalPagingApi::class)
     override fun fetchDiscoverArticles(
         category: ArticleCategory,
         country: String
     ): Flow<PagingData<Article>> {
-        return Pager(
+        val pagerFlow = Pager(
             PagingConfig(
                 pageSize = Constants.PAGE_SIZE_DISCOVER,
                 prefetchDistance = Constants.PREFETCH_DISTANCE_DISCOVER,
@@ -47,33 +45,13 @@ class DiscoverRepositoryImpl @Inject constructor(
                     .discoverDao()
                     .getDiscoverArticlesByCategory(category.category)
             }
-        ).flow.map { articles ->
-            articles.map {
-                it.toArticle()
+        ).flow.map {
+            it.map { articleEntity ->
+                articleEntity.toArticle()
             }
         }
-    }
 
-    override suspend fun updateDiscoverArticle(article: Article) {
-        database.withTransaction {
-            database
-                .discoverDao()
-                .updateDiscoverArticle(
-                    article = article.toDiscoverEntity()
-                )
-
-            val articleFromHeadline = database
-                .headlineDao()
-                .getHeadlineArticleByUrl(article.url)
-
-            if (articleFromHeadline != null) {
-                database.headlineDao().updateHeadlineArticle(
-                    article = articleFromHeadline.copy(
-                        favourite = article.favourite
-                    )
-                )
-            }
-        }
+        return pagerFlow
     }
 
     override suspend fun isTimeOut(category: ArticleCategory): Boolean {

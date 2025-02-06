@@ -64,6 +64,7 @@ class HeadlineRemoteMediator(
                         headlineDao().removeAllHeadlineArticles()
                         headlineKeyDao().clearRemoteKeys()
                     }
+
                     val articles = headlineArticles.map {
                         it.toHeadlineEntity(
                             category = category

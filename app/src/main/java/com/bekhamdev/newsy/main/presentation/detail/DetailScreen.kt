@@ -33,24 +33,21 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.bekhamdev.newsy.R
-import com.bekhamdev.newsy.core.presentation.utils.ArticleType
 import com.bekhamdev.newsy.core.presentation.utils.formatPublishedAtDate
 import com.bekhamdev.newsy.main.presentation.components.TopBar
 import com.bekhamdev.newsy.main.presentation.detail.components.InformationDetail
 import com.bekhamdev.newsy.main.presentation.home.HomeAction
-import com.bekhamdev.newsy.main.presentation.model.ArticleInformation
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
-    articleInformation: ArticleInformation?,
+    article: ArticleUi?,
     onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {},
     onAction: (HomeAction) -> Unit = {}
 ) {
-    val article = articleInformation?.article
     if (article == null) {
         Box(
             modifier = Modifier
@@ -126,11 +123,7 @@ fun DetailScreen(
                     IconButton(
                         onClick = {
                             onAction(
-                                if (articleInformation.type == ArticleType.HEADLINE) {
-                                    HomeAction.OnHeadlineFavouriteChange(article)
-                                } else {
-                                    HomeAction.OnDiscoverFavouriteChange(article)
-                                }
+                                HomeAction.OnFavouriteChange(article)
                             )
                         }
                     ) {
@@ -193,10 +186,7 @@ fun DetailScreenPreview() {
 
     NewsyTheme {
         DetailScreen(
-            articleInformation = ArticleInformation(
-                article = article,
-                type = ArticleType.DISCOVER
-            )
+            article = article
         )
     }
 }

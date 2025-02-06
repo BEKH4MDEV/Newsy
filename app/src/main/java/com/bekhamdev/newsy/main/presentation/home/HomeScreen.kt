@@ -21,11 +21,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
-import com.bekhamdev.newsy.core.presentation.utils.ArticleType
 import com.bekhamdev.newsy.main.presentation.home.components.HomeTopBar
 import com.bekhamdev.newsy.main.presentation.home.components.discoverItems
 import com.bekhamdev.newsy.main.presentation.home.components.headlineItems
-import com.bekhamdev.newsy.main.presentation.model.ArticleInformation
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +40,6 @@ fun HomeScreen(
     snackbarHostState: SnackbarHostState,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
     Scaffold(
         modifier = modifier,
         snackbarHost = {
@@ -66,8 +63,7 @@ fun HomeScreen(
 
         LaunchedEffect(
             key1 = headlineStateRefresh,
-            key2 = discoverStateRefresh,
-            key3 = state.refreshing
+            key2 = discoverStateRefresh
         ) {
             if (headlineStateRefresh !is LoadState.Loading
                 && discoverStateRefresh !is LoadState.Loading) {
@@ -80,7 +76,8 @@ fun HomeScreen(
             state = pullToRefreshState,
             onRefresh = {
                 isRefreshing = true
-                onAction(HomeAction.OnRefreshAll)
+                headlineArticles.refresh()
+                discoverArticles.refresh()
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -97,16 +94,13 @@ fun HomeScreen(
                     onItemClick = {
                         onAction(
                             HomeAction.OnArticleClick(
-                                ArticleInformation(
-                                    article = it,
-                                    type = ArticleType.HEADLINE
-                                )
+                                it
                             )
                         )
                     },
                     onFavouriteHeadlineChange = {
                         onAction(
-                            HomeAction.OnHeadlineFavouriteChange(it)
+                            HomeAction.OnFavouriteChange(it)
                         )
                     }
                 )
@@ -118,10 +112,7 @@ fun HomeScreen(
                     onItemClick = {
                         onAction(
                             HomeAction.OnArticleClick(
-                                ArticleInformation(
-                                    article = it,
-                                    type = ArticleType.DISCOVER
-                                )
+                                it
                             )
                         )
                     },
@@ -132,7 +123,7 @@ fun HomeScreen(
                     },
                     onFavouriteDiscoverChange = {
                         onAction(
-                            HomeAction.OnDiscoverFavouriteChange(it)
+                            HomeAction.OnFavouriteChange(it)
                         )
                     }
                 )

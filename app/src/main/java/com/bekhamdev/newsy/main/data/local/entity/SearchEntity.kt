@@ -5,9 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "headline"
+    tableName = "search"
 )
-data class HeadlineEntity(
+data class SearchEntity (
     @PrimaryKey
     val url: String,
 
@@ -26,9 +26,6 @@ data class HeadlineEntity(
     @ColumnInfo(name = "url_to_image")
     val urlToImage: String?,
 
-    val category: String?,
-
     @ColumnInfo(name = "created_at")
     val createdAt: Long = System.currentTimeMillis()
 )
-

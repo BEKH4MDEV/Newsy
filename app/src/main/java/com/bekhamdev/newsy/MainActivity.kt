@@ -27,12 +27,7 @@ class MainActivity : ComponentActivity() {
             NewsyTheme(
                 windowSize = windowWidthSizeClass
             ) {
-                val paddingValues = calculateLandscapePadding()
-                NavController(
-                    modifier = Modifier
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(paddingValues)
-                )
+                NavController()
             }
         }
     }

@@ -16,7 +16,7 @@ sealed interface Route {
     data object Settings: Route
 
     @Serializable
-    data object Favourite: Route
+    data object Favourites: Route
 
     @Serializable
     data object Search: Route

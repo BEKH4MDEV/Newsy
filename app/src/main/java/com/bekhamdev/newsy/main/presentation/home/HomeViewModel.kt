@@ -9,8 +9,6 @@ import com.bekhamdev.newsy.main.domain.mapper.toArticleUi
 import com.bekhamdev.newsy.main.domain.useCase.DiscoverUseCases
 import com.bekhamdev.newsy.main.domain.useCase.FavoriteUseCases
 import com.bekhamdev.newsy.main.domain.useCase.HeadlineUseCases
-import com.bekhamdev.newsy.main.presentation.mappers.toArticle
-import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,14 +18,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val headlineUseCases: HeadlineUseCases,
+    headlineUseCases: HeadlineUseCases,
     private val discoverUseCases: DiscoverUseCases,
-    private val favoriteUseCases: FavoriteUseCases
+    favoriteUseCases: FavoriteUseCases
 ) : ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = _state
@@ -81,41 +78,13 @@ class HomeViewModel @Inject constructor(
 
     fun onAction(event: HomeAction) {
         when (event) {
-            is HomeAction.OnArticleClick -> {
-                _state.update {
-                    it.copy(articleSelected = event.article)
-                }
-            }
             is HomeAction.OnCategoryChange -> {
                 _state.update {
                     it.copy(selectedDiscoverCategory = event.category)
                 }
                 selectedCategoryFlow.value = event.category
             }
-            is HomeAction.OnFavouriteChange -> {
-                val updated = event.article.copy(favourite = !event.article.favourite)
-                _state.update {
-                    it.copy(articleSelected = it.articleSelected?.copy(favourite = updated.favourite))
-                }
-                if (updated.favourite) {
-                    insertFavourite(updated)
-                } else {
-                    deleteFavorite(updated)
-                }
-            }
             is HomeAction.OnPreferencePanelToggle -> {}
-        }
-    }
-
-    private fun insertFavourite(article: ArticleUi) {
-        viewModelScope.launch {
-            favoriteUseCases.insertFavoriteArticleUseCase(article.toArticle())
-        }
-    }
-
-    private fun deleteFavorite(article: ArticleUi) {
-        viewModelScope.launch {
-            favoriteUseCases.deleteFavoriteArticleUseCase(article.toArticle())
         }
     }
 }

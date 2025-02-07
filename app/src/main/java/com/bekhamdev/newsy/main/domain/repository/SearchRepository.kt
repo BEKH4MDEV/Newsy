@@ -9,4 +9,6 @@ interface SearchRepository {
         language: String,
         query: String
     ): Flow<PagingData<Article>>
+
+    suspend fun deleteAllSearchArticles()
 }

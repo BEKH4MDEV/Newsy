@@ -9,11 +9,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FavoriteDao {
-    @Query("SELECT * FROM favorite WHERE (:category IS NULL AND category IS NULL) OR category = :category")
-    fun getAllFavoriteArticlesByCategory(
-        category: String?
-    ): Flow<List<FavoriteEntity>>
-
     @Query("SELECT url FROM favorite")
     fun getAllFavoriteArticlesUrl(): Flow<List<String>>
 

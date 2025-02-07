@@ -5,6 +5,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import androidx.room.withTransaction
 import com.bekhamdev.newsy.core.data.utils.Constants
 import com.bekhamdev.newsy.main.data.local.NewsyArticleDatabase
 import com.bekhamdev.newsy.main.data.mappers.toArticle
@@ -44,5 +45,11 @@ class SearchRepositoryImpl @Inject constructor(
         }
 
         return pagerFlow
+    }
+
+    override suspend fun deleteAllSearchArticles() {
+        database.withTransaction {
+            database.searchDao().removeAllSearchArticles()
+        }
     }
 }

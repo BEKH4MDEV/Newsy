@@ -1,4 +1,4 @@
-package com.bekhamdev.newsy.core.presentation.utils
+package com.bekhamdev.newsy.main.presentation.components
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -10,6 +10,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
+import com.bekhamdev.newsy.core.presentation.utils.ObserveAsEvents
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -19,7 +20,8 @@ import kotlinx.coroutines.launch
 fun HandlePagingErrors(
     loadStates: List<LoadStates?>,
     snackbarHostStates: List<SnackbarHostState>,
-    indexOfUnified: Int? = null
+    indexOfUnified: Int? = null,
+    singleSnackbar: Boolean = false
 ) {
 
     val errorInfo = remember {
@@ -61,17 +63,25 @@ fun HandlePagingErrors(
     ObserveAsEvents(
         events = errorInfo.receiveAsFlow()
     ) {
-
-        scope.launch {
-            snackbarHostStates[it.index].currentSnackbarData?.dismiss()
-            snackbarHostStates[it.index].showSnackbar(it.message)
-        }
-        if (indexOfUnified != null && indexOfUnified != it.index) {
+        if (singleSnackbar) {
             scope.launch {
-                snackbarHostStates[indexOfUnified].currentSnackbarData?.dismiss()
-                snackbarHostStates[indexOfUnified].showSnackbar(it.message)
+                snackbarHostStates[0].showSnackbar(it.message)
+            }
+        } else {
+            scope.launch {
+                snackbarHostStates[it.index].currentSnackbarData?.dismiss()
+                snackbarHostStates[it.index].showSnackbar(it.message)
+            }
+
+            if (indexOfUnified != null && indexOfUnified != it.index) {
+                scope.launch {
+                    snackbarHostStates[indexOfUnified].currentSnackbarData?.dismiss()
+                    snackbarHostStates[indexOfUnified].showSnackbar(it.message)
+                }
             }
         }
+
+
     }
 }
 

@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkAdded
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,7 +35,6 @@ import com.bekhamdev.newsy.R
 import com.bekhamdev.newsy.core.presentation.utils.formatPublishedAtDate
 import com.bekhamdev.newsy.main.presentation.components.TopBar
 import com.bekhamdev.newsy.main.presentation.detail.components.InformationDetail
-import com.bekhamdev.newsy.main.presentation.home.HomeAction
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
@@ -46,16 +44,14 @@ fun DetailScreen(
     article: ArticleUi?,
     onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {},
-    onAction: (HomeAction) -> Unit = {}
+    onFavoriteChange: (ArticleUi) -> Unit = {}
 ) {
     if (article == null) {
         Box(
             modifier = Modifier
                 .fillMaxSize(),
             contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
+        ) {}
     } else {
         val imgRequest = ImageRequest.Builder(LocalContext.current)
             .data(article.urlToImage)
@@ -122,9 +118,7 @@ fun DetailScreen(
                 ) {
                     IconButton(
                         onClick = {
-                            onAction(
-                                HomeAction.OnFavouriteChange(article)
-                            )
+                            onFavoriteChange(article)
                         }
                     ) {
                         Icon(
@@ -132,8 +126,6 @@ fun DetailScreen(
                             contentDescription = "favourite"
                         )
                     }
-
-
                     Text(
                         modifier = Modifier
                             .padding(end = NewsyTheme.dimens.defaultPadding),
@@ -141,7 +133,6 @@ fun DetailScreen(
                         style = MaterialTheme.typography.labelLarge,
                         color = Color.Gray
                     )
-
                 }
 
                 InformationDetail(

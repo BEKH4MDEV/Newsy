@@ -21,6 +21,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
+import com.bekhamdev.newsy.main.presentation.GlobalAction
+import com.bekhamdev.newsy.main.presentation.components.HandlePagingErrors
 import com.bekhamdev.newsy.main.presentation.home.components.HomeTopBar
 import com.bekhamdev.newsy.main.presentation.home.components.discoverItems
 import com.bekhamdev.newsy.main.presentation.home.components.headlineItems
@@ -34,16 +36,33 @@ fun HomeScreen(
     openDrawer: () -> Unit,
     onSearchClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onAction: (HomeAction) -> Unit,
+    onHomeAction: (HomeAction) -> Unit,
+    onGlobalAction: (GlobalAction) -> Unit,
     headlineArticles: LazyPagingItems<ArticleUi>,
-    discoverArticles: LazyPagingItems<ArticleUi>,
-    snackbarHostState: SnackbarHostState,
+    discoverArticles: LazyPagingItems<ArticleUi>
 ) {
+    val loadStateHeadline = headlineArticles.loadState.mediator
+    val loadStateDiscover = discoverArticles.loadState.mediator
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+
+    HandlePagingErrors(
+        loadStates = listOf(
+            loadStateHeadline,
+            loadStateDiscover
+        ),
+        snackbarHostStates = listOf(
+            snackBarHostState
+        ),
+        singleSnackbar = true
+    )
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         modifier = modifier,
         snackbarHost = {
-            SnackbarHost(snackbarHostState)
+            SnackbarHost(snackBarHostState)
         },
         topBar = {
             HomeTopBar(
@@ -92,15 +111,17 @@ fun HomeScreen(
                     headlineArticles = headlineArticles,
                     onViewMoreClick = onViewMoreClick,
                     onItemClick = {
-                        onAction(
-                            HomeAction.OnArticleClick(
+                        onGlobalAction(
+                            GlobalAction.OnArticleClick(
                                 it
                             )
                         )
                     },
                     onFavouriteHeadlineChange = {
-                        onAction(
-                            HomeAction.OnFavouriteChange(it)
+                        onGlobalAction(
+                            GlobalAction.OnFavoriteChange(
+                                it
+                            )
                         )
                     }
                 )
@@ -110,20 +131,22 @@ fun HomeScreen(
                     categories = ArticleCategory.entries,
                     discoverArticles = discoverArticles,
                     onItemClick = {
-                        onAction(
-                            HomeAction.OnArticleClick(
+                        onGlobalAction(
+                            GlobalAction.OnArticleClick(
                                 it
                             )
                         )
                     },
                     onCategoryChange = {
-                        onAction(
+                        onHomeAction(
                             HomeAction.OnCategoryChange(it)
                         )
                     },
                     onFavouriteDiscoverChange = {
-                        onAction(
-                            HomeAction.OnFavouriteChange(it)
+                        onGlobalAction(
+                            GlobalAction.OnFavoriteChange(
+                                it
+                            )
                         )
                     }
                 )

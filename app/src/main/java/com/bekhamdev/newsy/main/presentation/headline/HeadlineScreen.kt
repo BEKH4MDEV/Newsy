@@ -25,11 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
+import com.bekhamdev.newsy.main.presentation.GlobalAction
 import com.bekhamdev.newsy.main.presentation.components.ArticleItem
+import com.bekhamdev.newsy.main.presentation.components.HandlePagingErrors
 import com.bekhamdev.newsy.main.presentation.components.HeaderTitle
 import com.bekhamdev.newsy.main.presentation.components.ItemsPlaceholder
 import com.bekhamdev.newsy.main.presentation.components.TopBar
-import com.bekhamdev.newsy.main.presentation.home.HomeAction
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
@@ -38,17 +39,30 @@ import com.bekhamdev.newsy.ui.theme.NewsyTheme
 fun HeadlineScreen(
     modifier: Modifier = Modifier,
     articles: LazyPagingItems<ArticleUi>,
-    snackbarHostState: SnackbarHostState,
     onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {},
-    onAction: (HomeAction) -> Unit,
+    onGlobalAction: (GlobalAction) -> Unit
 ) {
+    val loadStateHeadline = articles.loadState.mediator
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+
+    HandlePagingErrors(
+        loadStates = listOf(
+            loadStateHeadline
+        ),
+        snackbarHostStates = listOf(
+            snackBarHostState
+        )
+    )
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
         snackbarHost = {
             SnackbarHost(
-                hostState = snackbarHostState
+                hostState = snackBarHostState
             )
         },
         topBar = {
@@ -112,15 +126,13 @@ fun HeadlineScreen(
                         ArticleItem(
                             article = article,
                             onClick = { item ->
-                                onAction(
-                                    HomeAction.OnArticleClick(
-                                        item
-                                    )
+                                onGlobalAction(
+                                    GlobalAction.OnArticleClick(item)
                                 )
                             },
                             onFavouriteChange = { item ->
-                                onAction(
-                                    HomeAction.OnFavouriteChange(item)
+                                onGlobalAction(
+                                    GlobalAction.OnFavoriteChange(item)
                                 )
                             },
                             modifier = Modifier

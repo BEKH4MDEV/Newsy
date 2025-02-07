@@ -14,7 +14,7 @@ interface SearchDao {
     )
     suspend fun insertSearchArticles(articles: List<SearchEntity>)
 
-    @Query("SELECT * FROM search ORDER BY published_at DESC")
+    @Query("SELECT * FROM search")
     fun getAllSearchArticles(): PagingSource<Int, SearchEntity>
 
     @Query("DELETE FROM search")

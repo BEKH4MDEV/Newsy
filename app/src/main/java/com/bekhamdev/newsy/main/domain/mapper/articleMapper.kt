@@ -24,6 +24,13 @@ fun Article.toArticleUi(
 fun Article.toFavoriteEntity(): FavoriteEntity {
     return FavoriteEntity(
         url = url,
-        category = category
+        author = author,
+        content = content,
+        description = description,
+        publishedAt = publishedAt,
+        sourceName = sourceName,
+        title = title,
+        urlToImage = urlToImage,
+        category = category,
     )
 }

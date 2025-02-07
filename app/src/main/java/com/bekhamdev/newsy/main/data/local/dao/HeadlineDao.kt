@@ -14,7 +14,7 @@ interface HeadlineDao {
     )
     suspend fun insertHeadlineArticles(articles: List<HeadlineEntity>)
 
-    @Query("SELECT * FROM headline ORDER BY published_at DESC")
+    @Query("SELECT * FROM headline")
     fun getAllHeadlineArticles(): PagingSource<Int, HeadlineEntity>
 
     @Query("DELETE FROM headline")

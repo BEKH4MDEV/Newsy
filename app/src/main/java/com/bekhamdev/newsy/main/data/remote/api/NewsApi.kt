@@ -27,6 +27,6 @@ interface NewsApi {
         @Query("q") query: String,
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int,
-        @Query("language") language: String = countryCodeList.first().language
+        @Query("language") language: String,
     ): ArticlesResponseDto
 }

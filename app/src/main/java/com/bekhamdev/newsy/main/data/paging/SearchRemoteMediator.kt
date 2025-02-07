@@ -10,7 +10,6 @@ import com.bekhamdev.newsy.main.data.local.entity.SearchEntity
 import com.bekhamdev.newsy.main.data.local.entity.SearchKeyEntity
 import com.bekhamdev.newsy.main.data.mappers.toSearchEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
-import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalPagingApi::class)
 class SearchRemoteMediator(
@@ -19,22 +18,6 @@ class SearchRemoteMediator(
     private val language: String,
     private val query: String
 ) : RemoteMediator<Int, SearchEntity>() {
-
-    override suspend fun initialize(): InitializeAction {
-        val cacheTimeout = TimeUnit.MILLISECONDS.convert(
-            20, TimeUnit.MINUTES
-        )
-
-        return if ((System.currentTimeMillis()
-                    -
-                    (database.searchDao().getCreationTime() ?: 0)) >= cacheTimeout
-        ) {
-            InitializeAction.LAUNCH_INITIAL_REFRESH
-        } else {
-            InitializeAction.SKIP_INITIAL_REFRESH
-        }
-    }
-
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, SearchEntity>
@@ -61,7 +44,6 @@ class SearchRemoteMediator(
                 language = language,
                 query = query,
             )
-
             val searchArticles = response.articles
             val endOfPaginationReached = searchArticles.isEmpty()
 
@@ -89,7 +71,6 @@ class SearchRemoteMediator(
                     )
 
                     searchKeyDao().insertAll(keys)
-
                 }
             }
             MediatorResult.Success(endOfPaginationReached)

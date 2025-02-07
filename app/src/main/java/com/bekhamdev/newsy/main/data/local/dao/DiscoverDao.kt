@@ -9,13 +9,12 @@ import com.bekhamdev.newsy.main.data.local.entity.DiscoverEntity
 
 @Dao
 interface DiscoverDao {
-
     @Insert(
         onConflict = OnConflictStrategy.IGNORE
     )
     suspend fun insertDiscoverArticles(articles: List<DiscoverEntity>)
 
-    @Query("SELECT * FROM discover WHERE category = :category ORDER BY published_at DESC")
+    @Query("SELECT * FROM discover WHERE category = :category")
     fun getDiscoverArticlesByCategory(category: String): PagingSource<Int, DiscoverEntity>
 
     @Query("DELETE FROM discover WHERE category = :category")

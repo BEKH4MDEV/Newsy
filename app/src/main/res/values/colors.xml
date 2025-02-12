@@ -10,4 +10,5 @@
     <color name="green30">#53643E</color>
     <!-- Status bar -->
     <color name="black30">#FF1F1B16</color>
+    <color name="background">#FFFFFBFF</color>
 </resources>

@@ -86,13 +86,13 @@ fun FavoritesScreen(
                             contentDescription = null,
                             modifier = Modifier
                                 .size(100.dp),
-                            tint = MaterialTheme.colorScheme.secondaryContainer
+                            tint = MaterialTheme.colorScheme.outlineVariant
                         )
                         Spacer(modifier = Modifier.height(NewsyTheme.dimens.defaultPadding))
                         Text(
                             text = "No favorites found",
                             style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.secondaryContainer
+                            color = MaterialTheme.colorScheme.outlineVariant
                         )
                     }
                 }

@@ -29,6 +29,7 @@ import com.bekhamdev.newsy.main.presentation.home.HomeScreen
 import com.bekhamdev.newsy.main.presentation.home.HomeViewModel
 import com.bekhamdev.newsy.main.presentation.search.SearchScreen
 import com.bekhamdev.newsy.main.presentation.search.SearchViewModel
+import com.bekhamdev.newsy.main.presentation.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -194,7 +195,11 @@ fun NavController(
             }
 
             composable<Route.Settings> {
-
+                SettingsScreen(
+                    goBack = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }

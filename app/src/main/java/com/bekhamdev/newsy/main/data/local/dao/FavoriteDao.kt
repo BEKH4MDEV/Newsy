@@ -19,4 +19,11 @@ interface FavoriteDao {
 
     @Query("DELETE FROM favorite WHERE url = :url")
     suspend fun deleteFavoriteArticle(url: String)
+
+    @Query("SELECT DISTINCT category FROM favorite")
+    fun getAllFavoriteCategories(): List<String?>
+
+    @Query("SELECT * FROM favorite WHERE (:category IS NULL AND category IS NULL) OR category = :category")
+    fun getFavoriteArticlesByCategory(category: String?): Flow<List<FavoriteEntity>>
+
 }

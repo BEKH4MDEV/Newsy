@@ -18,6 +18,7 @@ import com.bekhamdev.newsy.core.domain.utils.ArticleCategory
 import com.bekhamdev.newsy.main.presentation.components.ArticleItem
 import com.bekhamdev.newsy.main.presentation.components.HeaderTitle
 import com.bekhamdev.newsy.main.presentation.components.ItemsPlaceholder
+import com.bekhamdev.newsy.main.presentation.components.Ships
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
@@ -40,7 +41,7 @@ fun LazyListScope.discoverItems(
         Spacer(
             modifier = Modifier.size(NewsyTheme.dimens.itemSpacing)
         )
-        DiscoverShips(
+        Ships(
             selectCategory = selectedDiscoverCategory,
             categories = categories,
             onCategoryChange = onCategoryChange,

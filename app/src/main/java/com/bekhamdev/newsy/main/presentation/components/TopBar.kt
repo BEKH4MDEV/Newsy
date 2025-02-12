@@ -8,7 +8,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
@@ -18,7 +17,8 @@ fun TopBar(
     modifier: Modifier = Modifier,
     title: @Composable () -> Unit,
     onSearchClick: () -> Unit = {},
-    goBack: () -> Unit = {}
+    goBack: () -> Unit,
+    isSearchVisible: Boolean = true
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -35,14 +35,16 @@ fun TopBar(
             }
         },
         actions = {
-            IconButton(
-                onClick = onSearchClick
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "search",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+            if (isSearchVisible) {
+                IconButton(
+                    onClick = onSearchClick
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "search",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
     )

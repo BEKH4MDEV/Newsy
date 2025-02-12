@@ -11,6 +11,8 @@ import com.bekhamdev.newsy.main.data.local.entity.DiscoverEntity
 import com.bekhamdev.newsy.main.data.local.entity.DiscoverKeyEntity
 import com.bekhamdev.newsy.main.data.mappers.toDiscoverEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
+import kotlinx.coroutines.ensureActive
+import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalPagingApi::class)
 class DiscoverRemoteMediator(
@@ -86,6 +88,7 @@ class DiscoverRemoteMediator(
 
             MediatorResult.Success(endOfPaginationReached)
         } catch (error: Exception) {
+            coroutineContext.ensureActive()
             MediatorResult.Error(error)
         }
     }

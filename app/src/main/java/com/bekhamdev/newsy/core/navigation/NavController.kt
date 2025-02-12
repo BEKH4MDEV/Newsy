@@ -22,6 +22,8 @@ import com.bekhamdev.newsy.main.presentation.GlobalAction
 import com.bekhamdev.newsy.main.presentation.GlobalViewModel
 import com.bekhamdev.newsy.main.presentation.components.DrawerContent
 import com.bekhamdev.newsy.main.presentation.detail.DetailScreen
+import com.bekhamdev.newsy.main.presentation.favorites.FavoritesScreen
+import com.bekhamdev.newsy.main.presentation.favorites.FavoritesViewModel
 import com.bekhamdev.newsy.main.presentation.headline.HeadlineScreen
 import com.bekhamdev.newsy.main.presentation.home.HomeScreen
 import com.bekhamdev.newsy.main.presentation.home.HomeViewModel
@@ -68,7 +70,8 @@ fun NavController(
                         calculateLandscapePadding()
                     )
             )
-        }
+        },
+        gesturesEnabled = currentRouteString?.toTypedRoute() == Route.Home
     ) {
         NavHost(
             navController = navController,
@@ -115,9 +118,6 @@ fun NavController(
                     article = globalState.articleSelected,
                     onFavoriteChange = {
                         globalViewModel.onAction(GlobalAction.OnFavoriteChange(it))
-                    },
-                    onSearchClick = {
-                        navController.navigate(Route.Search)
                     },
                     goBack = {
                         navController.popBackStack()
@@ -167,6 +167,34 @@ fun NavController(
                         navController.popBackStack()
                     }
                 )
+            }
+
+            composable<Route.Favourites> {
+                val favouritesViewModel: FavoritesViewModel = hiltViewModel()
+                val favouritesState by favouritesViewModel.state.collectAsStateWithLifecycle()
+                FavoritesScreen(
+                    goBack = {
+                        navController.popBackStack()
+                    },
+                    isLoading = favouritesState.isLoading,
+                    onFavouritesAction = favouritesViewModel::onAction,
+                    onGlobalAction = {
+                        globalViewModel.onAction(it)
+                        when (it) {
+                            is GlobalAction.OnArticleClick -> {
+                                navController.navigate(Route.Detail)
+                            }
+                            else -> {}
+                        }
+                    },
+                    favourites = favouritesState.favorites,
+                    categories = favouritesState.categories,
+                    selectedCategory = favouritesState.selectedCategory
+                )
+            }
+
+            composable<Route.Settings> {
+
             }
         }
     }

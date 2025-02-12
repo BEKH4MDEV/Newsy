@@ -96,7 +96,7 @@ fun HeadlineCard(
                 ) {
                     Column {
                         Text(
-                            text = article.sourceName,
+                            text = if (article.sourceName.length > 20) article.sourceName.take(20) + "..." else article.sourceName,
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.tertiary

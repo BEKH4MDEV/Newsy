@@ -11,6 +11,8 @@ import com.bekhamdev.newsy.main.data.local.entity.HeadlineEntity
 import com.bekhamdev.newsy.main.data.local.entity.HeadlineKeyEntity
 import com.bekhamdev.newsy.main.data.mappers.toHeadlineEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
+import kotlinx.coroutines.ensureActive
+import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalPagingApi::class)
 class HeadlineRemoteMediator(
@@ -85,6 +87,7 @@ class HeadlineRemoteMediator(
             }
             MediatorResult.Success(endOfPaginationReached)
         } catch (error: Exception) {
+            coroutineContext.ensureActive()
             MediatorResult.Error(error)
         }
     }

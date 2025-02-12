@@ -10,6 +10,8 @@ import com.bekhamdev.newsy.main.data.local.entity.SearchEntity
 import com.bekhamdev.newsy.main.data.local.entity.SearchKeyEntity
 import com.bekhamdev.newsy.main.data.mappers.toSearchEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
+import kotlinx.coroutines.ensureActive
+import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalPagingApi::class)
 class SearchRemoteMediator(
@@ -75,6 +77,7 @@ class SearchRemoteMediator(
             }
             MediatorResult.Success(endOfPaginationReached)
         } catch (error: Exception) {
+            coroutineContext.ensureActive()
             MediatorResult.Error(error)
         }
     }

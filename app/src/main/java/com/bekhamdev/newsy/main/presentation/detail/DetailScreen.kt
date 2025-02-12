@@ -42,7 +42,6 @@ import com.bekhamdev.newsy.ui.theme.NewsyTheme
 fun DetailScreen(
     modifier: Modifier = Modifier,
     article: ArticleUi?,
-    onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {},
     onFavoriteChange: (ArticleUi) -> Unit = {}
 ) {
@@ -77,12 +76,13 @@ fun DetailScreen(
                 TopBar(
                     title = {
                         Text(
-                            text = article.sourceName,
-                            maxLines = 1
+                            text = if (article.sourceName.length > 20) article.sourceName.take(20) + "..." else article.sourceName,
+                            maxLines = 1,
+                            color = MaterialTheme.colorScheme.tertiary
                         )
                     },
-                    onSearchClick = onSearchClick,
-                    goBack = goBack
+                    goBack = goBack,
+                    isSearchVisible = false
                 )
             }
         ) { paddingValues ->

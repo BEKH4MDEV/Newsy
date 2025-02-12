@@ -101,7 +101,7 @@ fun InformationDetail(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = author,
+                    text = if (author.length > 20) author.take(20) + "..." else author,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     textDecoration = TextDecoration.Underline

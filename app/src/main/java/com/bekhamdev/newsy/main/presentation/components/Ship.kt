@@ -1,4 +1,4 @@
-package com.bekhamdev.newsy.main.presentation.home.components
+package com.bekhamdev.newsy.main.presentation.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.InputChip
@@ -9,21 +9,14 @@ import androidx.compose.ui.unit.dp
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
 @Composable
-fun DiscoverShip(
+fun Ship(
     modifier: Modifier = Modifier,
     selected: Boolean,
     onClick: () -> Unit,
-    label: String,
-    first: Boolean = false,
-    last: Boolean = false
+    label: String
 ) {
     InputChip(
-        modifier = modifier
-            .padding(horizontal = if (first || last) 0.dp else NewsyTheme.dimens.itemPadding)
-            .padding(
-                end = if (first) NewsyTheme.dimens.itemPadding else 0.dp,
-                start = if (last) NewsyTheme.dimens.itemPadding else 0.dp
-            ),
+        modifier = modifier,
         selected = selected,
         onClick = {
             if (!selected) onClick()

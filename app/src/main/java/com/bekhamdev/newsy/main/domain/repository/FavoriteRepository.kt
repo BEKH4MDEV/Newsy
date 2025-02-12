@@ -8,4 +8,6 @@ interface FavoriteRepository {
     suspend fun insertFavoriteArticle(article: Article)
     suspend fun deleteFavoriteArticle(article: Article)
     fun getAllFavoriteArticlesUrl(): Flow<List<String>>
+    suspend fun getAllFavoriteCategories(): List<String?>
+    fun getFavoriteArticlesByCategory(category: ArticleCategory): Flow<List<Article>>
 }

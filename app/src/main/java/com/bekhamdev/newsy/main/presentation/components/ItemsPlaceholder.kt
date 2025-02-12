@@ -32,7 +32,9 @@ fun ItemsPlaceholder(
     repeat(count) {
         Card(
             modifier = modifier
-                .padding(NewsyTheme.dimens.itemPadding)
+                .padding(
+                    vertical = NewsyTheme.dimens.itemPadding
+                )
                 .border(
                     width = 5.dp,
                     color = CardDefaults.cardColors().containerColor,

@@ -9,11 +9,13 @@ import com.bekhamdev.newsy.main.domain.mapper.toArticleUi
 import com.bekhamdev.newsy.main.domain.useCase.FavoriteUseCases
 import com.bekhamdev.newsy.main.domain.useCase.SearchUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,6 +35,7 @@ class SearchViewModel @Inject constructor(
         )
 
     private val favoritesFlow = favoriteUseCases.getAllFavoriteArticlesUrlUseCase()
+        .flowOn(Dispatchers.IO)
     private val queryFLow = MutableStateFlow("")
     @OptIn(ExperimentalCoroutinesApi::class)
     private val searchPagingFlow = queryFLow
@@ -41,14 +44,17 @@ class SearchViewModel @Inject constructor(
                 language = countryCodeList[0].language,
                 query = it
             )
-        }.cachedIn(viewModelScope)
+        }
+        .flowOn(Dispatchers.IO)
+        .cachedIn(viewModelScope)
     private val searchArticlesFlow = searchPagingFlow.combine(favoritesFlow) { pagingData, favorites ->
         pagingData.map { entity ->
             entity.toArticleUi(
                 favorites.contains(entity.url)
             )
         }
-    }.cachedIn(viewModelScope)
+    }   .flowOn(Dispatchers.IO)
+        .cachedIn(viewModelScope)
 
     fun onAction(action: SearchAction) {
         when (action) {

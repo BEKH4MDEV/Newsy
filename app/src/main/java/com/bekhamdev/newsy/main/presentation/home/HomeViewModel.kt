@@ -10,11 +10,13 @@ import com.bekhamdev.newsy.main.domain.useCase.DiscoverUseCases
 import com.bekhamdev.newsy.main.domain.useCase.FavoriteUseCases
 import com.bekhamdev.newsy.main.domain.useCase.HeadlineUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -38,11 +40,13 @@ class HomeViewModel @Inject constructor(
         )
 
     private val favoritesFlow = favoriteUseCases.getAllFavoriteArticlesUrlUseCase()
+        .flowOn(Dispatchers.IO)
 
     private val selectedCategoryFlow = MutableStateFlow(_state.value.selectedDiscoverCategory)
 
     private val headlinePagingFlow = headlineUseCases
         .fetchHeadlineArticleUseCase(country = countryCodeList[0].code)
+        .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -53,19 +57,22 @@ class HomeViewModel @Inject constructor(
                 country = countryCodeList[0].code
             )
         }
+        .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)
 
     private val headlineArticlesFlow = headlinePagingFlow.combine(favoritesFlow) { pagingData, favorites ->
         pagingData.map { entity ->
             entity.toArticleUi(favorites.contains(entity.url))
         }
-    }.cachedIn(viewModelScope)
+    }   .flowOn(Dispatchers.IO)
+        .cachedIn(viewModelScope)
 
     private val discoverArticlesFlow = discoverPagingFlow.combine(favoritesFlow) { pagingData, favorites ->
         pagingData.map { entity ->
             entity.toArticleUi(favorites.contains(entity.url))
         }
-    }.cachedIn(viewModelScope)
+    }   .flowOn(Dispatchers.IO)
+        .cachedIn(viewModelScope)
 
     private fun loadAllArticles() {
         _state.update {

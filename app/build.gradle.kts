@@ -24,7 +24,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"https://newsapi.org/v2/\"")
-            buildConfigField("String", "API_KEY", "\"82395c5bcdf04ca3ab6a466471c5234c\"")
+            buildConfigField("String", "API_KEY", "\"d1969c1c1eed42d4afd1b5fb1b6d412c\"")
         }
         release {
             isMinifyEnabled = false
@@ -33,7 +33,7 @@ android {
                 "proguard-rules.pro"
             )
             buildConfigField("String", "BASE_URL", "\"https://newsapi.org/v2/\"")
-            buildConfigField("String", "API_KEY", "\"82395c5bcdf04ca3ab6a466471c5234c\"")
+            buildConfigField("String", "API_KEY", "\"d1969c1c1eed42d4afd1b5fb1b6d412c\"")
         }
     }
     compileOptions {

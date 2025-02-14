@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocalFireDepartment
@@ -24,9 +25,9 @@ fun LazyListScope.headlineItems(
     headlineArticles: LazyPagingItems<ArticleUi>,
     onViewMoreClick: () -> Unit,
     onItemClick: (ArticleUi) -> Unit,
-    onFavouriteHeadlineChange: (ArticleUi) -> Unit
+    onFavouriteHeadlineChange: (ArticleUi) -> Unit,
+    listState: LazyListState
 ) {
-
     item {
         HeaderTitle(
             title = "Hot News",
@@ -56,6 +57,7 @@ fun LazyListScope.headlineItems(
                 onCardClick = onItemClick,
                 onFavouriteChange = onFavouriteHeadlineChange,
                 modifier = Modifier,
+                listState = listState
             )
         }
 

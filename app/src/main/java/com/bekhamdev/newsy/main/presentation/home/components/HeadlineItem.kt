@@ -2,12 +2,19 @@ package com.bekhamdev.newsy.main.presentation.home.components
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.Lifecycle
@@ -27,7 +34,8 @@ fun HeadlineItem(
     modifier: Modifier = Modifier,
     onCardClick: (ArticleUi) -> Unit,
     onFavouriteChange: (ArticleUi) -> Unit,
-    pageCount: Int = SharedValues.PAGER_PAGE_COUNT
+    pageCount: Int = SharedValues.PAGER_PAGE_COUNT,
+    listState: LazyListState
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -36,7 +44,19 @@ fun HeadlineItem(
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(pagerState.currentPage, pageCount) {
+    var autoScrolling by remember {
+        mutableStateOf(true)
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .collect {
+                val visibleItems = it.map { item -> item.index }
+                autoScrolling = visibleItems.contains(2)
+            }
+    }
+
+    LaunchedEffect(pagerState.currentPage, pageCount, autoScrolling) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
             withContext(Dispatchers.Main.immediate) {
                 delay(6000L)
@@ -46,7 +66,7 @@ fun HeadlineItem(
                     0
                 }
                 scope.launch {
-                    if (!pagerState.isScrollInProgress) {
+                    if (!pagerState.isScrollInProgress && autoScrolling) {
                         pagerState.animateScrollToPage(nextPage)
                     }
                 }
@@ -106,6 +126,7 @@ fun HeadlineItemPreview() {
             articles = articles,
             onCardClick = {},
             onFavouriteChange = {},
+            listState = rememberLazyListState()
         )
     }
 }

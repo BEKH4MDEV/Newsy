@@ -3,6 +3,7 @@ package com.bekhamdev.newsy.main.presentation.home
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -104,10 +105,12 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            val listState = rememberLazyListState()
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection),
+                state = listState
             ) {
                 headlineItems(
                     headlineArticles = headlineArticles,
@@ -125,7 +128,8 @@ fun HomeScreen(
                                 it
                             )
                         )
-                    }
+                    },
+                    listState = listState
                 )
 
                 discoverItems(

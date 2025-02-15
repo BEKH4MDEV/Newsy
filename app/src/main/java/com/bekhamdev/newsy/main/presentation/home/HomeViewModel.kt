@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,13 +41,11 @@ class HomeViewModel @Inject constructor(
         )
 
     private val favoritesFlow = favoriteUseCases.getAllFavoriteArticlesUrlUseCase()
-        .flowOn(Dispatchers.IO)
 
     private val selectedCategoryFlow = MutableStateFlow(_state.value.selectedDiscoverCategory)
 
     private val headlinePagingFlow = headlineUseCases
         .fetchHeadlineArticleUseCase(country = countryCodeList[0].code)
-        .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -57,19 +56,22 @@ class HomeViewModel @Inject constructor(
                 country = countryCodeList[0].code
             )
         }
-        .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)
 
     private val headlineArticlesFlow = headlinePagingFlow.combine(favoritesFlow) { pagingData, favorites ->
-        pagingData.map { entity ->
-            entity.toArticleUi(favorites.contains(entity.url))
+        withContext(Dispatchers.Default) {
+            pagingData.map { entity ->
+                entity.toArticleUi(favorites.contains(entity.url))
+            }
         }
     }   .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)
 
     private val discoverArticlesFlow = discoverPagingFlow.combine(favoritesFlow) { pagingData, favorites ->
-        pagingData.map { entity ->
-            entity.toArticleUi(favorites.contains(entity.url))
+        withContext(Dispatchers.Default) {
+            pagingData.map { entity ->
+                entity.toArticleUi(favorites.contains(entity.url))
+            }
         }
     }   .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)

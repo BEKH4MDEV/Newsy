@@ -50,7 +50,7 @@ fun LazyListScope.headlineItems(
         }
     }
 
-    item {
+    item(key = "pager") {
         if (headlineArticles.itemCount > 0) {
             HeadlineItem(
                 articles = headlineArticles.itemSnapshotList.items,

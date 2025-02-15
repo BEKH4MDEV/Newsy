@@ -10,7 +10,9 @@ import com.bekhamdev.newsy.main.data.local.entity.SearchEntity
 import com.bekhamdev.newsy.main.data.local.entity.SearchKeyEntity
 import com.bekhamdev.newsy.main.data.mappers.toSearchEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalPagingApi::class)
@@ -29,10 +31,12 @@ class SearchRemoteMediator(
                 val remoteKey = getClosestRemoteKey(state)
                 remoteKey?.nextKey?.minus(1) ?: 1
             }
+
             LoadType.PREPEND -> {
                 val remoteKey = getFirstRemoteKey()
                 remoteKey?.prevKey ?: return MediatorResult.Success(endOfPaginationReached = true)
             }
+
             LoadType.APPEND -> {
                 val remoteKey = getLastRemoteKey()
                 remoteKey?.nextKey ?: return MediatorResult.Success(endOfPaginationReached = true)
@@ -40,12 +44,14 @@ class SearchRemoteMediator(
         }
 
         return try {
-            val response = api.getEverythingArticles(
-                pageSize = state.config.pageSize,
-                page = page,
-                language = language,
-                query = query,
-            )
+            val response = withContext(Dispatchers.IO) {
+                api.getEverythingArticles(
+                    pageSize = state.config.pageSize,
+                    page = page,
+                    language = language,
+                    query = query,
+                )
+            }
             val searchArticles = response.articles
             val endOfPaginationReached = searchArticles.isEmpty()
 
@@ -61,11 +67,13 @@ class SearchRemoteMediator(
                     }
 
                     val keys = articles.map { article ->
-                        SearchKeyEntity(
-                            url = article.url,
-                            prevKey = if (page == 1) null else page - 1,
-                            nextKey = if (endOfPaginationReached) null else page + 1
-                        )
+                        withContext(Dispatchers.Default) {
+                            SearchKeyEntity(
+                                url = article.url,
+                                prevKey = if (page == 1) null else page - 1,
+                                nextKey = if (endOfPaginationReached) null else page + 1
+                            )
+                        }
                     }
 
                     searchDao().insertSearchArticles(

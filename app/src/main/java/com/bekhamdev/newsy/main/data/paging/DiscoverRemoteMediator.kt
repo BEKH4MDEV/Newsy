@@ -11,7 +11,9 @@ import com.bekhamdev.newsy.main.data.local.entity.DiscoverEntity
 import com.bekhamdev.newsy.main.data.local.entity.DiscoverKeyEntity
 import com.bekhamdev.newsy.main.data.mappers.toDiscoverEntity
 import com.bekhamdev.newsy.main.data.remote.api.NewsApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 
 @OptIn(ExperimentalPagingApi::class)
@@ -51,12 +53,15 @@ class DiscoverRemoteMediator(
         }
 
         return try {
-            val response = api.getArticles(
-                pageSize = state.config.pageSize,
-                category = category.category,
-                page = page,
-                country = country
-            )
+            val response = withContext(Dispatchers.IO) {
+                api.getArticles(
+                    pageSize = state.config.pageSize,
+                    category = category.category,
+                    page = page,
+                    country = country
+                )
+            }
+
             val discoverArticles = response.articles
             val endOfPaginationReached = discoverArticles.isEmpty()
             database.withTransaction {
@@ -73,11 +78,13 @@ class DiscoverRemoteMediator(
                     }
 
                     val keys = articles.map { article ->
-                        DiscoverKeyEntity(
-                            url = article.url,
-                            prevKey = if (page == 1) null else page - 1,
-                            nextKey = if (endOfPaginationReached) null else page + 1
-                        )
+                        withContext(Dispatchers.Default) {
+                            DiscoverKeyEntity(
+                                url = article.url,
+                                prevKey = if (page == 1) null else page - 1,
+                                nextKey = if (endOfPaginationReached) null else page + 1
+                            )
+                        }
                     }
                     discoverDao().insertDiscoverArticles(
                         articles

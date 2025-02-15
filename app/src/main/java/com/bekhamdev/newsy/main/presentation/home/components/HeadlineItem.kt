@@ -79,7 +79,6 @@ fun HeadlineItem(
             .fillMaxWidth(),
         state = pagerState,
         contentPadding = PaddingValues(NewsyTheme.dimens.defaultPadding),
-        beyondViewportPageCount = 1,
         pageSize = PageSize.Fill,
         pageSpacing = NewsyTheme.dimens.itemSpacing,
     ) { page ->

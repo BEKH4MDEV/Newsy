@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,7 +36,6 @@ class SearchViewModel @Inject constructor(
         )
 
     private val favoritesFlow = favoriteUseCases.getAllFavoriteArticlesUrlUseCase()
-        .flowOn(Dispatchers.IO)
     private val queryFLow = MutableStateFlow("")
     @OptIn(ExperimentalCoroutinesApi::class)
     private val searchPagingFlow = queryFLow
@@ -45,13 +45,14 @@ class SearchViewModel @Inject constructor(
                 query = it
             )
         }
-        .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)
     private val searchArticlesFlow = searchPagingFlow.combine(favoritesFlow) { pagingData, favorites ->
         pagingData.map { entity ->
-            entity.toArticleUi(
-                favorites.contains(entity.url)
-            )
+            withContext(Dispatchers.Default) {
+                entity.toArticleUi(
+                    favorites.contains(entity.url)
+                )
+            }
         }
     }   .flowOn(Dispatchers.IO)
         .cachedIn(viewModelScope)

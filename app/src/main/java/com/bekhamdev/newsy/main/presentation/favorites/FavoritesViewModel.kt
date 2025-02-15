@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,9 +64,11 @@ class FavoritesViewModel @Inject constructor(
                     val categories = favoriteUseCases
                         .getAllFavoriteCategoriesUseCase()
                         .map {
-                            ArticleCategory.entries.find { category ->
-                                category.category == it
-                            } ?: ArticleCategory.GENERAL
+                            withContext(Dispatchers.Default) {
+                                ArticleCategory.entries.find { category ->
+                                    category.category == it
+                                } ?: ArticleCategory.GENERAL
+                            }
                         }.sortedBy { ArticleCategory.entries.indexOf(it) }
 
                     val selected = categories.firstOrNull()

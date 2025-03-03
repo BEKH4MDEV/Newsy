@@ -1,5 +1,8 @@
 package com.bekhamdev.newsy.main.presentation.favorites
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +34,7 @@ import com.bekhamdev.newsy.main.presentation.favorites.components.ShipsPlacehold
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
@@ -40,7 +44,9 @@ fun FavoritesScreen(
     onGlobalAction: (GlobalAction) -> Unit,
     favourites: List<ArticleUi>,
     categories: List<ArticleCategory>,
-    selectedCategory: ArticleCategory?
+    selectedCategory: ArticleCategory?,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Scaffold(
         modifier = modifier
@@ -120,7 +126,9 @@ fun FavoritesScreen(
                     },
                     onFavouriteChange = { article ->
                         onGlobalAction(GlobalAction.OnFavoriteChange(article))
-                    }
+                    },
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }

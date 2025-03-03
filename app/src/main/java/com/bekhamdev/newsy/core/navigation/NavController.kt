@@ -1,10 +1,12 @@
 package com.bekhamdev.newsy.core.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
@@ -36,6 +38,7 @@ import com.bekhamdev.newsy.main.presentation.search.SearchViewModel
 import com.bekhamdev.newsy.main.presentation.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun NavController(
     modifier: Modifier = Modifier,
@@ -77,156 +80,157 @@ fun NavController(
         },
         gesturesEnabled = drawerState.isClosed.not()
     ) {
-        NavHost(
-            navController = navController,
-            startDestination = Route.Home,
-            modifier = modifier
-                .background(MaterialTheme.colorScheme.background)
-                .padding(
-                    landscapePadding
-                ),
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(500)
-                ) + fadeIn(animationSpec = tween(500))
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(500)
-                ) + fadeOut(animationSpec = tween(500))
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it },
-                    animationSpec = tween(500)
-                ) + fadeIn(animationSpec = tween(500))
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(500)
-                ) + fadeOut(animationSpec = tween(500))
-            }
-        ) {
-            composable<Route.Home> {
-                val discoverArticles = homeState.discoverArticles.collectAsLazyPagingItems()
-                HomeScreen(
-                    state = homeState,
-                    onViewMoreClick = {
-                        navController.navigate(Route.Headline)
-                    },
-                    openDrawer = {
-                        scope.launch {
-                            drawerState.open()
-                        }
-                    },
-                    onHomeAction = homeViewModel::onAction,
-                    onGlobalAction = {
-                        globalViewModel.onAction(it)
-                        when (it) {
-                            is GlobalAction.OnArticleClick -> {
-                                navController.navigate(Route.Detail)
+        SharedTransitionLayout {
+            NavHost(
+                navController = navController,
+                startDestination = Route.Home,
+                modifier = modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(
+                        landscapePadding
+                    ),
+                enterTransition = {
+                    scaleIn(
+                        initialScale = 0.95f,
+                        animationSpec = tween(300)
+                    ) + fadeIn(animationSpec = tween(300))
+                },
+                exitTransition = {
+                    scaleOut(
+                        targetScale = 1.05f,
+                        animationSpec = tween(300)
+                    ) + fadeOut(animationSpec = tween(300))
+                }
+
+            ) {
+                composable<Route.Home> {
+                    val discoverArticles = homeState.discoverArticles.collectAsLazyPagingItems()
+                    HomeScreen(
+                        state = homeState,
+                        onViewMoreClick = {
+                            navController.navigate(Route.Headline)
+                        },
+                        openDrawer = {
+                            scope.launch {
+                                drawerState.open()
                             }
+                        },
+                        onHomeAction = homeViewModel::onAction,
+                        onGlobalAction = {
+                            globalViewModel.onAction(it)
+                            when (it) {
+                                is GlobalAction.OnArticleClick -> {
+                                    navController.navigate(Route.Detail)
+                                }
 
-                            else -> {}
-                        }
-                    },
-                    onSearchClick = {
-                        navController.navigate(Route.Search)
-                    },
-                    headlineArticles = headlineArticles,
-                    discoverArticles = discoverArticles
-                )
-            }
-
-            composable<Route.Detail> {
-                DetailScreen(
-                    article = globalState.articleSelected,
-                    onFavoriteChange = {
-                        globalViewModel.onAction(GlobalAction.OnFavoriteChange(it))
-                    },
-                    goBack = {
-                        navController.popBackStack()
-                    }
-                )
-            }
-
-            composable<Route.Headline> {
-                HeadlineScreen(
-                    articles = headlineArticles,
-                    onSearchClick = {
-                        navController.navigate(Route.Search)
-                    },
-                    goBack = {
-                        navController.popBackStack()
-                    },
-                    onGlobalAction = {
-                        globalViewModel.onAction(it)
-                        when (it) {
-                            is GlobalAction.OnArticleClick -> {
-                                navController.navigate(Route.Detail)
+                                else -> {}
                             }
+                        },
+                        onSearchClick = {
+                            navController.navigate(Route.Search)
+                        },
+                        headlineArticles = headlineArticles,
+                        discoverArticles = discoverArticles,
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this@composable
+                    )
+                }
 
-                            else -> {}
-                        }
-                    }
-                )
-            }
+                composable<Route.Detail> {
+                    DetailScreen(
+                        article = globalState.articleSelected,
+                        onFavoriteChange = {
+                            globalViewModel.onAction(GlobalAction.OnFavoriteChange(it))
+                        },
+                        goBack = {
+                            navController.popBackStack()
+                        },
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this@composable
+                    )
+                }
 
-            composable<Route.Search> {
-                val searchViewModel: SearchViewModel = hiltViewModel()
-                val searchState by searchViewModel.state.collectAsStateWithLifecycle()
-                val searchArticles = searchState.searchArticles.collectAsLazyPagingItems()
-                SearchScreen(
-                    articles = searchArticles,
-                    onSearchAction = searchViewModel::onAction,
-                    onGlobalAction = {
-                        globalViewModel.onAction(it)
-                        when (it) {
-                            is GlobalAction.OnArticleClick -> {
-                                navController.navigate(Route.Detail)
+                composable<Route.Headline> {
+                    HeadlineScreen(
+                        articles = headlineArticles,
+                        onSearchClick = {
+                            navController.navigate(Route.Search)
+                        },
+                        goBack = {
+                            navController.popBackStack()
+                        },
+                        onGlobalAction = {
+                            globalViewModel.onAction(it)
+                            when (it) {
+                                is GlobalAction.OnArticleClick -> {
+                                    navController.navigate(Route.Detail)
+                                }
+
+                                else -> {}
                             }
-                            else -> {}
-                        }
-                    },
-                    goBack = {
-                        navController.popBackStack()
-                    }
-                )
-            }
+                        },
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this@composable
+                    )
+                }
 
-            composable<Route.Favourites> {
-                val favouritesViewModel: FavoritesViewModel = hiltViewModel()
-                val favouritesState by favouritesViewModel.state.collectAsStateWithLifecycle()
-                FavoritesScreen(
-                    goBack = {
-                        navController.popBackStack()
-                    },
-                    isLoading = favouritesState.isLoading,
-                    onFavouritesAction = favouritesViewModel::onAction,
-                    onGlobalAction = {
-                        globalViewModel.onAction(it)
-                        when (it) {
-                            is GlobalAction.OnArticleClick -> {
-                                navController.navigate(Route.Detail)
+                composable<Route.Search> {
+                    val searchViewModel: SearchViewModel = hiltViewModel()
+                    val searchState by searchViewModel.state.collectAsStateWithLifecycle()
+                    val searchArticles = searchState.searchArticles.collectAsLazyPagingItems()
+                    SearchScreen(
+                        articles = searchArticles,
+                        onSearchAction = searchViewModel::onAction,
+                        onGlobalAction = {
+                            globalViewModel.onAction(it)
+                            when (it) {
+                                is GlobalAction.OnArticleClick -> {
+                                    navController.navigate(Route.Detail)
+                                }
+                                else -> {}
                             }
-                            else -> {}
-                        }
-                    },
-                    favourites = favouritesState.favorites,
-                    categories = favouritesState.categories,
-                    selectedCategory = favouritesState.selectedCategory
-                )
-            }
+                        },
+                        goBack = {
+                            navController.popBackStack()
+                        },
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this@composable
+                    )
+                }
 
-            composable<Route.Settings> {
-                SettingsScreen(
-                    goBack = {
-                        navController.popBackStack()
-                    }
-                )
+                composable<Route.Favourites> {
+                    val favouritesViewModel: FavoritesViewModel = hiltViewModel()
+                    val favouritesState by favouritesViewModel.state.collectAsStateWithLifecycle()
+                    FavoritesScreen(
+                        goBack = {
+                            navController.popBackStack()
+                        },
+                        isLoading = favouritesState.isLoading,
+                        onFavouritesAction = favouritesViewModel::onAction,
+                        onGlobalAction = {
+                            globalViewModel.onAction(it)
+                            when (it) {
+                                is GlobalAction.OnArticleClick -> {
+                                    navController.navigate(Route.Detail)
+                                }
+                                else -> {}
+                            }
+                        },
+                        favourites = favouritesState.favorites,
+                        categories = favouritesState.categories,
+                        selectedCategory = favouritesState.selectedCategory,
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedVisibilityScope = this@composable
+                    )
+                }
+
+                composable<Route.Settings> {
+                    SettingsScreen(
+                        goBack = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
             }
         }
     }

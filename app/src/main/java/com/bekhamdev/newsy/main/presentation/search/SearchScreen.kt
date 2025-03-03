@@ -1,5 +1,8 @@
 package com.bekhamdev.newsy.main.presentation.search
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,13 +39,16 @@ import com.bekhamdev.newsy.main.presentation.search.components.InputSearch
 import com.bekhamdev.newsy.main.presentation.search.components.SearchTopBar
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
     articles: LazyPagingItems<ArticleUi>,
     onSearchAction: (SearchAction) -> Unit,
     onGlobalAction: (GlobalAction) -> Unit,
-    goBack: () -> Unit
+    goBack: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val loadStateMediator = articles.loadState.mediator
     val snackbarHostState = remember {
@@ -154,7 +160,9 @@ fun SearchScreen(
                                             article
                                         )
                                     )
-                                }
+                                },
+                                sharedTransitionScope = sharedTransitionScope,
+                                animatedVisibilityScope = animatedVisibilityScope
                             )
                         }
                     }

@@ -1,5 +1,8 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,13 +25,16 @@ import com.bekhamdev.newsy.main.presentation.components.Ships
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun LazyListScope.discoverItems(
     selectedDiscoverCategory: ArticleCategory,
     categories: List<ArticleCategory>,
     discoverArticles: LazyPagingItems<ArticleUi>,
     onItemClick: (ArticleUi) -> Unit,
     onCategoryChange: (ArticleCategory) -> Unit,
-    onFavouriteDiscoverChange: (ArticleUi) -> Unit
+    onFavouriteDiscoverChange: (ArticleUi) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val loadStateMediator = discoverArticles.loadState.mediator?.refresh
     val isLoading = discoverArticles.loadState.append is LoadState.Loading
@@ -74,7 +80,9 @@ fun LazyListScope.discoverItems(
                 onClick = onItemClick,
                 onFavouriteChange = onFavouriteDiscoverChange,
                 modifier = Modifier
-                    .padding(horizontal = NewsyTheme.dimens.defaultPadding)
+                    .padding(horizontal = NewsyTheme.dimens.defaultPadding),
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
             )
         }
     }

@@ -1,5 +1,8 @@
 package com.bekhamdev.newsy.main.presentation.headline
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -34,14 +37,16 @@ import com.bekhamdev.newsy.main.presentation.components.TopBar
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun HeadlineScreen(
     modifier: Modifier = Modifier,
     articles: LazyPagingItems<ArticleUi>,
     onSearchClick: () -> Unit = {},
     goBack: () -> Unit = {},
-    onGlobalAction: (GlobalAction) -> Unit
+    onGlobalAction: (GlobalAction) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val loadStateHeadline = articles.loadState.mediator
     val snackBarHostState = remember {
@@ -136,7 +141,9 @@ fun HeadlineScreen(
                                 )
                             },
                             modifier = Modifier
-                                .padding(horizontal = NewsyTheme.dimens.defaultPadding)
+                                .padding(horizontal = NewsyTheme.dimens.defaultPadding),
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedVisibilityScope = animatedVisibilityScope
                         )
                     }
                 }

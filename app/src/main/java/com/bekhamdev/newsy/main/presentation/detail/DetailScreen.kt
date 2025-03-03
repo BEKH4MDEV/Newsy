@@ -1,5 +1,8 @@
 package com.bekhamdev.newsy.main.presentation.detail
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkAdded
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,11 +27,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.bekhamdev.newsy.R
@@ -37,12 +41,15 @@ import com.bekhamdev.newsy.main.presentation.detail.components.InformationDetail
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun DetailScreen(
     modifier: Modifier = Modifier,
     article: ArticleUi?,
     goBack: () -> Unit = {},
-    onFavoriteChange: (ArticleUi) -> Unit = {}
+    onFavoriteChange: (ArticleUi) -> Unit = {},
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     if (article == null) {
         Box(
@@ -89,21 +96,27 @@ fun DetailScreen(
                         horizontal = NewsyTheme.dimens.defaultPadding
                     )
             ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    AsyncImage(
-                        model = article.urlToImage,
-                        placeholder = painterResource(R.drawable.ideogram_2_),
-                        error = painterResource(R.drawable.ideogram_2_),
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "news image",
+                with(sharedTransitionScope) {
+                    Card(
                         modifier = Modifier
-                            .height(260.dp)
-                    )
+                            .fillMaxWidth()
+                    ) {
+                        AsyncImage(
+                            model = article.urlToImage,
+                            placeholder = painterResource(R.drawable.ideogram_2_),
+                            error = painterResource(R.drawable.ideogram_2_),
+                            contentScale = ContentScale.Crop,
+                            contentDescription = "news image",
+                            modifier = Modifier
+                                .height(260.dp)
+                                .sharedElement(
+                                    state = rememberSharedContentState(key = "image-${article.url}-${article.category}"),
+                                    animatedVisibilityScope = animatedVisibilityScope
+                                )
+                                .clip(CardDefaults.shape)
+                        )
+                    }
                 }
-
                 Row(
                     modifier = Modifier
                         .padding(vertical = NewsyTheme.dimens.itemPadding)
@@ -139,40 +152,5 @@ fun DetailScreen(
                 )
             }
         }
-    }
-}
-
-@Preview(
-    showBackground = true,
-    showSystemUi = true
-)
-@Composable
-fun DetailScreenPreview() {
-    val article = ArticleUi(
-        author = "John Doe",
-        content = """
-        This is the detailed content of the article. 
-        It provides an in-depth analysis of the latest technological trends, 
-        including expert insights, market projections, and real-world applications. 
-        The content aims to educate and engage readers by exploring these topics comprehensively, 
-        offering actionable insights and a deeper understanding of the rapidly evolving tech landscape.
-    """.trimIndent(),
-        description = """
-        An overview of the latest technological trends, highlighting key developments, 
-        market shifts, and their potential impact on industries worldwide.
-    """.trimIndent(),
-        publishedAt = "2025-01-23T10:00:00Z",
-        sourceName = "Tech News Daily",
-        title = "Emerging Trends in Technology for 2025",
-        url = "https://example.com/article",
-        urlToImage = "https://example.com/technology-trends.jpg",
-        favourite = true,
-        category = "Technology"
-    )
-
-    NewsyTheme {
-        DetailScreen(
-            article = article
-        )
     }
 }

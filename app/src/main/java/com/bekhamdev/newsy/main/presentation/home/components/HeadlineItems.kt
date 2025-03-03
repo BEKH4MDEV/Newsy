@@ -1,5 +1,8 @@
 package com.bekhamdev.newsy.main.presentation.home.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -21,12 +24,15 @@ import com.bekhamdev.newsy.main.presentation.components.HeaderTitle
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun LazyListScope.headlineItems(
     headlineArticles: LazyPagingItems<ArticleUi>,
     onViewMoreClick: () -> Unit,
     onItemClick: (ArticleUi) -> Unit,
     onFavouriteHeadlineChange: (ArticleUi) -> Unit,
-    listState: LazyListState
+    listState: LazyListState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     item(key = "Headline Header") {
         HeaderTitle(
@@ -57,7 +63,9 @@ fun LazyListScope.headlineItems(
                 onCardClick = onItemClick,
                 onFavouriteChange = onFavouriteHeadlineChange,
                 modifier = Modifier,
-                listState = listState
+                listState = listState,
+                sharedTransitionScope = sharedTransitionScope,
+                animatedVisibilityScope = animatedVisibilityScope
             )
         }
 

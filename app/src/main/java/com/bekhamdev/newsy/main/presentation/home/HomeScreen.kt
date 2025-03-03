@@ -1,5 +1,8 @@
 package com.bekhamdev.newsy.main.presentation.home
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +32,7 @@ import com.bekhamdev.newsy.main.presentation.home.components.discoverItems
 import com.bekhamdev.newsy.main.presentation.home.components.headlineItems
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreen(
     state: HomeState,
@@ -40,7 +43,9 @@ fun HomeScreen(
     onHomeAction: (HomeAction) -> Unit,
     onGlobalAction: (GlobalAction) -> Unit,
     headlineArticles: LazyPagingItems<ArticleUi>,
-    discoverArticles: LazyPagingItems<ArticleUi>
+    discoverArticles: LazyPagingItems<ArticleUi>,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     val loadStateHeadline = headlineArticles.loadState.mediator
     val loadStateDiscover = discoverArticles.loadState.mediator
@@ -128,7 +133,9 @@ fun HomeScreen(
                             )
                         )
                     },
-                    listState = listState
+                    listState = listState,
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
 
                 discoverItems(
@@ -153,7 +160,9 @@ fun HomeScreen(
                                 it
                             )
                         )
-                    }
+                    },
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedVisibilityScope = animatedVisibilityScope
                 )
             }
         }

@@ -1,12 +1,16 @@
 package com.bekhamdev.newsy.main.presentation.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ScreenSearchDesktop
 import androidx.compose.material3.CircularProgressIndicator
@@ -22,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -82,15 +87,13 @@ fun SearchScreen(
                 onSearch = {
                     onSearchAction(SearchAction.OnSearch(query.value))
                     onSearchAction(SearchAction.OnClearArticles)
-                },
-                modifier = Modifier.padding(
-                    bottom = NewsyTheme.dimens.defaultPadding
-                )
+                }
             )
 
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(top = NewsyTheme.dimens.defaultPadding)
             ) {
                 val loadStateRefresh = loadStateMediator?.refresh
                 val isLoading = articles.loadState.append is LoadState.Loading
@@ -99,11 +102,11 @@ fun SearchScreen(
                     if (articles.itemCount == 0 && loadStateRefresh !is LoadState.Loading) {
                         Column(
                             modifier = Modifier
-                                .fillParentMaxWidth()
-                                .fillParentMaxHeight(0.7f),
+                                .fillParentMaxSize()
+                                .verticalScroll(rememberScrollState()),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
                         ) {
+                            Spacer(modifier = Modifier.weight(.3f))
                             Icon(
                                 imageVector = Icons.Default.ScreenSearchDesktop,
                                 contentDescription = null,
@@ -117,6 +120,7 @@ fun SearchScreen(
                                 textAlign = TextAlign.Center,
                                 color = MaterialTheme.colorScheme.outlineVariant,
                             )
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }

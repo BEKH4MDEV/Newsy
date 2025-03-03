@@ -1,5 +1,10 @@
 package com.bekhamdev.newsy.core.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.DrawerValue
@@ -72,7 +77,7 @@ fun NavController(
                     )
             )
         },
-        gesturesEnabled = currentRouteString?.toTypedRoute() == Route.Home
+        gesturesEnabled = drawerState.isClosed.not()
     ) {
         NavHost(
             navController = navController,
@@ -81,7 +86,31 @@ fun NavController(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(
                     calculateLandscapePadding()
-                )
+                ),
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(500)
+                ) + fadeIn(animationSpec = tween(500))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(500)
+                ) + fadeOut(animationSpec = tween(500))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(500)
+                ) + fadeIn(animationSpec = tween(500))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(500)
+                ) + fadeOut(animationSpec = tween(500))
+            }
         ) {
             composable<Route.Home> {
                 val discoverArticles = homeState.discoverArticles.collectAsLazyPagingItems()

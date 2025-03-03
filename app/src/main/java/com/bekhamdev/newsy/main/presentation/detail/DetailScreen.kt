@@ -78,7 +78,7 @@ fun DetailScreen(
                         Text(
                             text = if (article.sourceName.length > 20) article.sourceName.take(20) + "..." else article.sourceName,
                             maxLines = 1,
-                            color = MaterialTheme.colorScheme.tertiary
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     },
                     goBack = goBack,

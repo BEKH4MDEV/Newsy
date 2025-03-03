@@ -16,7 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkAdded
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -97,25 +96,20 @@ fun DetailScreen(
                     )
             ) {
                 with(sharedTransitionScope) {
-                    Card(
+                    AsyncImage(
+                        model = article.urlToImage,
+                        placeholder = painterResource(R.drawable.ideogram_2_),
+                        error = painterResource(R.drawable.ideogram_2_),
+                        contentScale = ContentScale.Crop,
+                        contentDescription = "news image",
                         modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        AsyncImage(
-                            model = article.urlToImage,
-                            placeholder = painterResource(R.drawable.ideogram_2_),
-                            error = painterResource(R.drawable.ideogram_2_),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = "news image",
-                            modifier = Modifier
-                                .height(260.dp)
-                                .sharedElement(
-                                    state = rememberSharedContentState(key = "image-${article.url}-${article.category}"),
-                                    animatedVisibilityScope = animatedVisibilityScope
-                                )
-                                .clip(CardDefaults.shape)
-                        )
-                    }
+                            .height(260.dp)
+                            .sharedElement(
+                                state = rememberSharedContentState(key = "image-${article.url}-${article.category}"),
+                                animatedVisibilityScope = animatedVisibilityScope
+                            )
+                            .clip(CardDefaults.shape)
+                    )
                 }
                 Row(
                     modifier = Modifier

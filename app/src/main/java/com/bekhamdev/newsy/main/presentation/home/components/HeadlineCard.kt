@@ -2,6 +2,7 @@ package com.bekhamdev.newsy.main.presentation.home.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,12 +23,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.bekhamdev.newsy.R
 import com.bekhamdev.newsy.core.presentation.utils.formatPublishedAtDate
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
@@ -40,11 +39,6 @@ fun HeadlineCard(
     onCardClick: (ArticleUi) -> Unit,
     onFavouriteChange: (ArticleUi) -> Unit
 ) {
-    val imgRequest = ImageRequest.Builder(LocalContext.current)
-        .data(article.urlToImage)
-        .crossfade(true)
-        .build()
-
     val favouriteIcon = if (article.favourite)
         Icons.Default.BookmarkAdded
     else
@@ -67,7 +61,7 @@ fun HeadlineCard(
     ) {
         Column {
             AsyncImage(
-                model = imgRequest,
+                model = article.urlToImage,
                 placeholder = painterResource(R.drawable.ideogram_2_),
                 error = painterResource(R.drawable.ideogram_2_),
                 contentScale = ContentScale.Crop,
@@ -94,9 +88,12 @@ fun HeadlineCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                    ) {
                         Text(
-                            text = if (article.sourceName.length > 20) article.sourceName.take(20) + "..." else article.sourceName,
+                            text = article.sourceName,
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.tertiary
@@ -108,13 +105,19 @@ fun HeadlineCard(
                         )
                     }
 
-                    IconButton(
-                        onClick = { onFavouriteChange(article) }
+                    Box(
+                        modifier = Modifier
+                            .weight(.6f),
+                        contentAlignment = Alignment.CenterEnd
                     ) {
-                        Icon(
-                            imageVector = favouriteIcon,
-                            contentDescription = "favourite"
-                        )
+                        IconButton(
+                            onClick = { onFavouriteChange(article) }
+                        ) {
+                            Icon(
+                                imageVector = favouriteIcon,
+                                contentDescription = "favourite"
+                            )
+                        }
                     }
                 }
             }

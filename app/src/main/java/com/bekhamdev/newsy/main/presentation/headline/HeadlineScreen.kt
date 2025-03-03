@@ -112,7 +112,7 @@ fun HeadlineScreen(
 
                 val isLoading = articles.loadState.append is LoadState.Loading
 
-                item {
+                item("Placeholder") {
                     when {
                         articles.itemCount == 0 -> {
                             ItemsPlaceholder()
@@ -120,7 +120,7 @@ fun HeadlineScreen(
                     }
                 }
 
-                items(articles.itemCount) {
+                items(articles.itemCount, key = { articles[it]?.url ?: it }) {
                     val article = articles[it]
                     article?.let {
                         ArticleItem(
@@ -141,7 +141,7 @@ fun HeadlineScreen(
                     }
                 }
 
-                item {
+                item("Loading") {
                     if (isLoading && articles.itemCount > 0) {
                         Box(
                             modifier = Modifier

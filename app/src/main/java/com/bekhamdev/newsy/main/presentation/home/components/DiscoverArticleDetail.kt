@@ -2,6 +2,7 @@ package com.bekhamdev.newsy.main.presentation.home.components
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import com.bekhamdev.newsy.core.presentation.utils.formatPublishedAtDate
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
@@ -55,6 +57,7 @@ fun DiscoverArticleDetail(
             text = article.title,
             style = MaterialTheme.typography.titleMedium,
             maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             fontWeight = FontWeight.Bold,
 
         )
@@ -65,11 +68,15 @@ fun DiscoverArticleDetail(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
                 Text(
-                    text = if (article.sourceName.length > 20) article.sourceName.take(20) + "..." else article.sourceName,
+                    text = article.sourceName,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.tertiary
                 )
@@ -80,13 +87,19 @@ fun DiscoverArticleDetail(
                 )
             }
 
-            IconButton(
-                onClick = { onFavouriteChange(article) }
+            Box(
+                modifier = Modifier
+                    .weight(.7f),
+                contentAlignment = Alignment.CenterEnd
             ) {
-                Icon(
-                    imageVector = favouriteIcon,
-                    contentDescription = "favourite"
-                )
+                IconButton(
+                    onClick = { onFavouriteChange(article) }
+                ) {
+                    Icon(
+                        imageVector = favouriteIcon,
+                        contentDescription = "favourite"
+                    )
+                }
             }
         }
     }

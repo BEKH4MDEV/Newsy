@@ -8,6 +8,7 @@ import com.bekhamdev.newsy.main.domain.useCase.FavoriteUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -35,6 +36,7 @@ class FavoritesViewModel @Inject constructor(
             started = SharingStarted.Lazily,
             initialValue = _state.value
         )
+    private var job: Job? = null
 
     private val selectedCategory = MutableStateFlow<ArticleCategory?>(null)
 
@@ -56,7 +58,8 @@ class FavoritesViewModel @Inject constructor(
                 }
             }
 
-        viewModelScope.launch(
+        job?.cancel()
+        job = viewModelScope.launch(
             Dispatchers.IO
         ) {
             favorites.collectLatest { articleList ->

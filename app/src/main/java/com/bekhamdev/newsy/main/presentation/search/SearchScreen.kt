@@ -1,7 +1,5 @@
 package com.bekhamdev.newsy.main.presentation.search
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -98,7 +95,7 @@ fun SearchScreen(
                 val loadStateRefresh = loadStateMediator?.refresh
                 val isLoading = articles.loadState.append is LoadState.Loading
 
-                item {
+                item("No Articles") {
                     if (articles.itemCount == 0 && loadStateRefresh !is LoadState.Loading) {
                         Column(
                             modifier = Modifier
@@ -125,7 +122,7 @@ fun SearchScreen(
                     }
                 }
 
-                item {
+                item(key = "Refresh Loading") {
                     if (loadStateRefresh is LoadState.Loading) {
                         Box(
                             modifier = Modifier
@@ -139,7 +136,7 @@ fun SearchScreen(
                 }
 
                 if (loadStateRefresh !is LoadState.Loading) {
-                    items(articles.itemCount) {
+                    items(articles.itemCount, key = { articles[it]?.url ?: it }) {
                         val article = articles[it]
                         article?.let {
                             ArticleItem(
@@ -163,7 +160,9 @@ fun SearchScreen(
                     }
                 }
 
-                item {
+                item(
+                    "Append Loading"
+                ) {
                     if (isLoading && articles.itemCount > 0) {
                         Box(
                             modifier = Modifier

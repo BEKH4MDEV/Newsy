@@ -28,7 +28,7 @@ fun LazyListScope.headlineItems(
     onFavouriteHeadlineChange: (ArticleUi) -> Unit,
     listState: LazyListState
 ) {
-    item {
+    item(key = "Headline Header") {
         HeaderTitle(
             title = "Hot News",
             icon = Icons.Default.LocalFireDepartment,
@@ -42,7 +42,7 @@ fun LazyListScope.headlineItems(
         )
     }
 
-    item {
+    item(key = "Headline Placeholder") {
         when {
             headlineArticles.itemCount == 0 -> {
                 HeadlineItemsPlaceholder()
@@ -50,7 +50,7 @@ fun LazyListScope.headlineItems(
         }
     }
 
-    item(key = "pager") {
+    item(key = "Headline Pager") {
         if (headlineArticles.itemCount > 0) {
             HeadlineItem(
                 articles = headlineArticles.itemSnapshotList.items,

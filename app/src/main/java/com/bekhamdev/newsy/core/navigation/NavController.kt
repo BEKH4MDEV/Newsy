@@ -19,7 +19,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.bekhamdev.newsy.core.presentation.utils.calculateLandscapePadding
@@ -48,15 +47,14 @@ fun NavController(
     val homeState by homeViewModel.state.collectAsStateWithLifecycle()
     val globalState by globalViewModel.state.collectAsStateWithLifecycle()
     val headlineArticles = homeState.headlineArticles.collectAsLazyPagingItems()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRouteString = navBackStackEntry?.destination?.route
     val scope = rememberCoroutineScope()
+    val landscapePadding = calculateLandscapePadding()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             DrawerContent(
-                currentRoute = currentRouteString?.toTypedRoute(),
+                currentRoute = Route.Home,
                 closeDrawer = {
                     scope.launch {
                         drawerState.close()
@@ -73,7 +71,7 @@ fun NavController(
                 },
                 modifier = Modifier
                     .padding(
-                        calculateLandscapePadding()
+                        landscapePadding
                     )
             )
         },
@@ -85,7 +83,7 @@ fun NavController(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.background)
                 .padding(
-                    calculateLandscapePadding()
+                    landscapePadding
                 ),
             enterTransition = {
                 slideInHorizontally(

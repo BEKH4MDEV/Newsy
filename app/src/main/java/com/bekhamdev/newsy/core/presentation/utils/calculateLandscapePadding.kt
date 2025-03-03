@@ -18,19 +18,22 @@ fun calculateLandscapePadding(): PaddingValues {
     val rotation = LocalView.current.display?.rotation ?: Surface.ROTATION_0
 
     return when (rotation) {
-       Surface.ROTATION_90 -> PaddingValues(
-            top = 0.dp,
-            bottom = 0.dp,
-            start = insetsPadding.calculateLeftPadding(LayoutDirection.Ltr),
-            end = 0.dp
-        )
+        Surface.ROTATION_90 ->
+            PaddingValues(
+                top = 0.dp,
+                bottom = 0.dp,
+                start = insetsPadding.calculateLeftPadding(LayoutDirection.Ltr),
+                end = 0.dp
+            )
 
-        Surface.ROTATION_270 -> PaddingValues(
-            top = 0.dp,
-            bottom = 0.dp,
-            start = 0.dp,
-            end = insetsPadding.calculateRightPadding(LayoutDirection.Ltr)
-        )
+        Surface.ROTATION_270 ->
+            PaddingValues(
+                top = 0.dp,
+                bottom = 0.dp,
+                start = 0.dp,
+                end = insetsPadding.calculateRightPadding(LayoutDirection.Ltr)
+            )
+
 
         else -> PaddingValues(0.dp)
     }

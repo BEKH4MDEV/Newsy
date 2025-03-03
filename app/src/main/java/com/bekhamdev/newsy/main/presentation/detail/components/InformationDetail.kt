@@ -15,12 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,12 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bekhamdev.newsy.R
 import com.bekhamdev.newsy.ui.theme.NewsyTheme
@@ -71,6 +68,8 @@ fun InformationDetail(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Row(
+                modifier = Modifier
+                    .weight(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(
@@ -101,31 +100,36 @@ fun InformationDetail(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
-                    text = if (author.length > 20) author.take(20) + "..." else author,
+                    text = author,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     textDecoration = TextDecoration.Underline
                 )
             }
 
             val context = LocalContext.current
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-
-            IconButton(
-                onClick = {
-                    context.startActivity(intent)
-                }
+            Box(
+                modifier = Modifier
+                    .weight(.6f),
+                contentAlignment = Alignment.CenterEnd
             ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.go_to_site),
-                    contentDescription = "Go to Site",
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier
-                        .size(28.dp)
-                        .rotate(90f)
-                )
+                IconButton(
+                    onClick = {
+                        context.startActivity(intent)
+                    }
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.go_to_site),
+                        contentDescription = "Go to Site",
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .size(28.dp)
+                            .rotate(90f)
+                    )
+                }
             }
-
         }
         Spacer(Modifier.height(NewsyTheme.dimens.defaultSpacing))
         Text(

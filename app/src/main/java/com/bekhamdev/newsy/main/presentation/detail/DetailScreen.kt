@@ -25,12 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.bekhamdev.newsy.R
 import com.bekhamdev.newsy.core.presentation.utils.formatPublishedAtDate
 import com.bekhamdev.newsy.main.presentation.components.TopBar
@@ -52,11 +51,6 @@ fun DetailScreen(
             contentAlignment = Alignment.Center
         ) {}
     } else {
-        val imgRequest = ImageRequest.Builder(LocalContext.current)
-            .data(article.urlToImage)
-            .crossfade(true)
-            .build()
-
         val favouriteIcon = if (article.favourite)
             Icons.Default.BookmarkAdded
         else
@@ -76,8 +70,9 @@ fun DetailScreen(
                 TopBar(
                     title = {
                         Text(
-                            text = if (article.sourceName.length > 20) article.sourceName.take(20) + "..." else article.sourceName,
+                            text = article.sourceName,
                             maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     },
@@ -99,7 +94,7 @@ fun DetailScreen(
                         .fillMaxWidth()
                 ) {
                     AsyncImage(
-                        model = imgRequest,
+                        model = article.urlToImage,
                         placeholder = painterResource(R.drawable.ideogram_2_),
                         error = painterResource(R.drawable.ideogram_2_),
                         contentScale = ContentScale.Crop,

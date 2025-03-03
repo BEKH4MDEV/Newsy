@@ -12,12 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.bekhamdev.newsy.R
 import com.bekhamdev.newsy.main.presentation.home.components.DiscoverArticleDetail
 import com.bekhamdev.newsy.main.presentation.model.ArticleUi
@@ -30,12 +28,6 @@ fun ArticleItem(
     onClick: (ArticleUi) -> Unit,
     onFavouriteChange: (ArticleUi) -> Unit
 ) {
-    val imgRequest = ImageRequest
-        .Builder(LocalContext.current)
-        .data(article.urlToImage)
-        .crossfade(true)
-        .build()
-
     Card(
         modifier = modifier
             .padding(
@@ -53,7 +45,7 @@ fun ArticleItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = imgRequest,
+                model = article.urlToImage,
                 placeholder = painterResource(R.drawable.news_place_holder),
                 error = painterResource(R.drawable.news_place_holder),
                 contentDescription = "Article Image",
@@ -79,7 +71,7 @@ fun DiscoverArticleItemPreview() {
                 content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                 description = "An overview of Kotlin features.",
                 publishedAt = "2025-01-01T10:00:00Z",
-                sourceName = "Tech News",
+                sourceName = "Tech News afasdf adsfasd asdfasdfas asd f",
                 title = "Exploring Kotlin in 2025",
                 url = "https://technews.com/articles/kotlin-2025",
                 urlToImage = "https://technews.com/images/kotlin.jpg",

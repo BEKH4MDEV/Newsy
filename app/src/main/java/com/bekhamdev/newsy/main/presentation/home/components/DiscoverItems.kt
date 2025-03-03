@@ -33,7 +33,7 @@ fun LazyListScope.discoverItems(
     val loadStateMediator = discoverArticles.loadState.mediator?.refresh
     val isLoading = discoverArticles.loadState.append is LoadState.Loading
 
-    item {
+    item(key = "Discover Header") {
         HeaderTitle(
             title = "Discover News",
             icon = Icons.Default.Newspaper
@@ -52,7 +52,7 @@ fun LazyListScope.discoverItems(
         )
     }
 
-    item {
+    item(key = "Discover Placeholder") {
         when {
             loadStateMediator is LoadState.Loading
                     && discoverArticles.itemCount == 0 -> {
@@ -66,7 +66,7 @@ fun LazyListScope.discoverItems(
         }
     }
 
-    items(discoverArticles.itemCount) { index ->
+    items(discoverArticles.itemCount, key = { discoverArticles[it]?.url ?: it }) { index ->
         val article = discoverArticles[index]
         article?.let {
             ArticleItem(
@@ -79,7 +79,7 @@ fun LazyListScope.discoverItems(
         }
     }
 
-    item {
+    item(key = "Discover Loading") {
         if (isLoading && discoverArticles.itemCount > 0) {
             Box(
                 modifier = Modifier

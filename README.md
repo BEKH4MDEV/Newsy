@@ -1,86 +1,86 @@
 # Newsy
 
-A modern Android news application built with Jetpack Compose that delivers up-to-date news articles across various categories with offline support.
+Una moderna aplicación de noticias para Android desarrollada con Jetpack Compose que ofrece artículos de noticias actualizados en diversas categorías, con soporte para lectura sin conexión.
 
-## Features
+## Características
 
-- **Hot News Carousel**: Interactive news slider showcasing the latest headlines
-- **Category-based News**: Browse news by categories:
-  - Business
-  - Entertainment
-  - Health
-  - Science
-  - Sports
-  - Technology
-- **Offline Support**: Powered by Room database for seamless offline reading
-- **Article Search**: Discover articles with powerful search functionality
-- **Bookmarks**: Save your favorite articles for later reading
-- **Country Selection**: Customize news feed based on country preference (currently US)
-- **Clean UI**: Material Design 3 implementation with modern Android practices
+- **Carrusel de Noticias Destacadas**: Deslizador interactivo que muestra los titulares más recientes.
+- **Noticias por Categorías**: Explora noticias organizadas por categorías:
+  - Negocios
+  - Entretenimiento
+  - Salud
+  - Ciencia
+  - Deportes
+  - Tecnología
+- **Soporte sin Conexión**: Impulsado por Room Database para una experiencia de lectura fluida sin Internet.
+- **Búsqueda de Artículos**: Encuentra artículos fácilmente con una potente funcionalidad de búsqueda.
+- **Marcadores**: Guarda tus artículos favoritos para leerlos más tarde.
+- **Selección de País**: Personaliza tu fuente de noticias según el país seleccionado (actualmente Estados Unidos).
+- **Interfaz Limpia**: Implementación de Material Design 3 siguiendo las mejores prácticas modernas de Android.
 
-## Screenshots
+## Capturas de Pantalla
 
-| Home | Detail | Explore | Favorites | Drawer | Settings |
-|------|--------|---------|-----------|---------|-----------|
-|![Home Screen](/screenshots/home.jpeg)|![Detail Screen](/screenshots/detail.jpeg)|![Explore Screen](/screenshots/explore.jpeg)|![Favorites Screen](/screenshots/favorites.jpeg)|![Drawer](/screenshots/drawer.jpeg)|![Settings Screen](/screenshots/settings.jpeg)|
+| Inicio | Detalle | Explorar | Favoritos | Menú Lateral | Ajustes |
+|---------|---------|----------|------------|--------------|----------|
+| ![Pantalla de inicio](/screenshots/home.jpeg) | ![Pantalla de detalle](/screenshots/detail.jpeg) | ![Pantalla de exploración](/screenshots/explore.jpeg) | ![Pantalla de favoritos](/screenshots/favorites.jpeg) | ![Menú lateral](/screenshots/drawer.jpeg) | ![Pantalla de ajustes](/screenshots/settings.jpeg) |
 
-## Technology Stack
+## Tecnologías Utilizadas
 
-### Architecture
+### Arquitectura
 - Clean Architecture
-- MVI (Model-View-Intent) pattern
+- Patrón MVI (Model-View-Intent)
 
-### Core Technologies
-- **UI Framework**: Jetpack Compose with Material 3
-- **Programming Language**: Kotlin 2.0+
-- **Local Storage**: Room Database
-- **Pagination**: Paging 3
-- **Navigation**: Compose Navigation
-- **State Management**: MVI pattern
+### Tecnologías Principales
+- **Framework de UI**: Jetpack Compose con Material 3
+- **Lenguaje de Programación**: Kotlin 2.0+
+- **Almacenamiento Local**: Room Database
+- **Paginación**: Paging 3
+- **Navegación**: Compose Navigation
+- **Gestión de Estado**: Patrón MVI
 
-### Key Libraries
+### Bibliotecas Principales
 - Jetpack Compose Pager
 - Room Database
 - Paging 3
-- Material 3 Components
+- Componentes Material 3
 - Navigation Compose
 
-## Features in Detail
+## Características en Detalle
 
-### Home Screen
-- Hot News carousel using Compose Pager
-- Category selection with horizontal scrollable tabs
-- Paginated article list with Paging 3
-- Navigation drawer for app sections
+### Pantalla Principal
+- Carrusel de noticias destacadas utilizando Compose Pager.
+- Selección de categorías mediante pestañas horizontales desplazables.
+- Lista de artículos paginada con Paging 3.
+- Menú lateral de navegación para acceder a las diferentes secciones de la aplicación.
 
-### Article Details
-- Comprehensive article view
-- Direct link to source website
-- Bookmark functionality
+### Detalles del Artículo
+- Vista completa del artículo.
+- Enlace directo al sitio web de la fuente original.
+- Funcionalidad para guardar artículos en marcadores.
 
-### Discover
-- Search functionality for articles
-- Real-time search results
-- Category-based filtering
+### Explorar
+- Funcionalidad de búsqueda de artículos.
+- Resultados de búsqueda en tiempo real.
+- Filtrado por categorías.
 
-### Offline Support
-- Room database integration
-- Automatic caching of articles
-- Seamless offline-online transitions
+### Soporte sin Conexión
+- Integración con Room Database.
+- Almacenamiento automático en caché de artículos.
+- Transición fluida entre los modos en línea y sin conexión.
 
-### Settings
-- Country preference selection
-- Future-ready for additional countries
+### Ajustes
+- Selección de país de preferencia.
+- Preparado para admitir más países en futuras versiones.
 
-## Installation
+## Instalación
 
-1. Clone this repository
-2. Open project in Android Studio
-3. Build and run on an emulator or physical device
+1. Clona este repositorio.
+2. Abre el proyecto en Android Studio.
+3. Compila y ejecuta la aplicación en un emulador o dispositivo físico.
 
-## Requirements
+## Requisitos
 
-- Android Studio Ladybug or newer
-- Minimum SDK: 25
-- Target SDK: 35
-- Kotlin 2.0 or newer
+- Android Studio Ladybug o una versión más reciente.
+- SDK mínimo: 25.
+- SDK objetivo: 35.
+- Kotlin 2.0 o superior.
